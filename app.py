@@ -13,5 +13,23 @@ def auth():
     return render_template("auth.html")
 
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+
+@app.route("/create")
+def profile():
+    return render_template("create.html")
+
+@app.route("/edit")
+def profile():
+    return render_template("edit.html")
+
+@app.route("/list")
+def profile():
+    return render_template("list.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)

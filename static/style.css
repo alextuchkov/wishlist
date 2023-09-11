@@ -227,9 +227,27 @@ a.pure-button-primary {
 /* This is the class used for the footer */
 .footer {
     background: #111;
-    position: fixed;
+   
     bottom: 0;
     width: 100%;
+}
+
+.profile {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center; /* Vertical centering */
+    margin: 0 auto; /* Center the container horizontally within its parent */
+    padding-top: 4rem;
+}
+
+.profile form {
+        width: 768px; /* Set the width of the form to 768px */
+        /* Add other form styling here */
+}
+
+.profile .item {
+    width: 768px; /* Set the width of the form to 768px */
+    /* Add other form styling here */
 }
 
 /*

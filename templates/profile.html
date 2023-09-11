@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- header -->
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href="/">Wishlist</a>
+
+        <ul class="pure-menu-list">
+
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">Вийти з системи</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="profile">
+
+        <form class="pure-form pure-form-aligned">
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="aligned-name">Ваше імʼя</label>
+                    <input type="text" id="aligned-name" disabled="" placeholder="Олександр Тучков" />
+                </div>
+                <div class="pure-control-group">
+                    <label for="aligned-email">Email</label>
+                    <input type="email" id="aligned-email" disabled="" placeholder="email@email.com" />
+                </div>
+                <div class="pure-control-group">
+                    <label for="aligned-foo">Доставка</label>
+                    <input type="text" id="aligned-foo" disabled="" placeholder="Харків, НП 123, 0935204776" />
+                </div>
+                <div class="pure-controls">
+    
+                    <button type="submit" class="pure-button pure-button-primary">Змінити данні</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="profile">
+        <hr>
+        <h2>Мої списки бажань</h2>
+        <div class="item">
+              <h3>Item Name</h3>  
+        </div>
+         
+    </div>
+    <div class="profile">
+        <hr>
+        <h2>Чужі списки бажань, за якими я слідкую</h2>
+        <div class="item">
+            <h3>Item Name</h3>  
+        </div>
+    </div>
+
+
+{% endblock %}
