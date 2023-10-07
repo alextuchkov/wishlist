@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import models
-from models import User, List
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,13 +10,54 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "secret-key-goes-here"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 Session = sessionmaker(bind=engine)
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-# db.init_app(app)
+
+class User(db.Model):
+    """Regular user model"""
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)  # Add this line
+
+    def __repr__(self):
+        return "<User %r>" % self.username
+
+    def is_active(self):
+        """True, as all users are active."""
+        return True
+
+    def get_id(self):
+        """Return the email as id"""
+        return str(self.id)
+
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        return self.authenticated
+
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
+
+
+class List(db.Model):
+    """Lists connected to users, containing products"""
+
+    id = db.Column(db.Integer, primary_key=True)
+    list_name = db.Column(db.String, nullable=False)
+    list_description = db.Column(db.String)
+    list_category = db.Column(db.String)
+    deadline = db.Column(db.Date)
+    # list_items = db.Column(JSON)  # Assuming items will be stored as JSON
+
+    def __repr__(self):
+        return f"<List id={self.id}, list_name={self.list_name}, list_category={self.list_category}, deadline={self.deadline}>"
 
 
 @app.route("/")
@@ -83,7 +124,8 @@ def list():
 
 @app.route("/user/<int:id>")
 def user_detail(id):
-    user = db.get_or_404(User, id)
+    user = User.query.filter_by(id=id).first()
+
     return render_template("profile.html", user=user)
 
 
