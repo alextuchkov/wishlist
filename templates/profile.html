@@ -1,56 +1,103 @@
 {% extends 'base.html' %}
 
+<title>{% block title %}{{ user.id }}{% endblock %}</title>
+
 {% block content %}
-<!-- header -->
-<div class="header">
-    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a class="pure-menu-heading" href="/">Wishlist</a>
 
-        <ul class="pure-menu-list">
-
-            <li class="pure-menu-item"><a href="/" class="pure-menu-link">Вийти з системи</a></li>
-        </ul>
+    <div class="row">
+        <div class="column">
+             <nav class="header">
+                <a class="float-left" href="/"><h1>Whishlist</h1></a>
+                <a class="float-right" href="{{ url_for('new')}}">Create a List</a>
+            </nav>
+        </div>
     </div>
-</div>
 
-<div class="profile">
+    <div class="content">
+        <h2>Your Profile</h2>
 
-        <form class="pure-form pure-form-aligned">
+        <form >
             <fieldset>
-                <div class="pure-control-group">
+                <div>
                     <label for="aligned-name">Ваше імʼя</label>
                     <input type="text" id="aligned-name" disabled="" placeholder="Олександр Тучков" />
                 </div>
-                <div class="pure-control-group">
+                <div>
                     <label for="aligned-email">Email</label>
                     <input type="email" id="aligned-email" disabled="" placeholder="email@email.com" />
                 </div>
-                <div class="pure-control-group">
+                <div>
                     <label for="aligned-foo">Доставка</label>
                     <input type="text" id="aligned-foo" disabled="" placeholder="Харків, НП 123, 0935204776" />
                 </div>
                 <div class="pure-controls">
     
-                    <button type="submit" class="pure-button pure-button-primary">Змінити данні</button>
+                    <button type="submit">Змінити данні</button>
                 </div>
             </fieldset>
         </form>
+
+
     </div>
-    <div class="profile">
-        <hr>
-        <h2>Мої списки бажань</h2>
-        <div class="item">
-              <h3>Item Name</h3>  
-        </div>
-         
-    </div>
-    <div class="profile">
-        <hr>
-        <h2>Чужі списки бажань, за якими я слідкую</h2>
-        <div class="item">
-            <h3>Item Name</h3>  
-        </div>
-    </div>
+        
+
+     
+            <h3>My Lists:</h2>
+            <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Created on</th>
+                    <th>Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+             
+   <hr>
+     
+            <h3>Following:</h2>
+            <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Created on</th>
+                    <th>Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+             
+
+
 
 
 {% endblock %}

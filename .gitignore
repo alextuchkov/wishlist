@@ -17,6 +17,10 @@ build/
 .idea/
 docs/_build/
 .vscode
+db.sqlite
+alembic
+alembic.ini
+instance
 
 # Coverage reports
 htmlcov/

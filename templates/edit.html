@@ -1,5 +1,35 @@
 {% extends 'base.html' %}
-
+<title>{% block title %}{% endblock %}</title>
 {% block content %}
+
+<div class="content">
+    <form>
+        <fieldset>
+            <input type="text" placeholder="Name your list" id="list_name">
+            <textarea placeholder="List Description" id="description"></textarea>
+
+                <div class="row">
+                    <div class="column column-50">
+                        <label for="category">List Category</label>
+                        <select id="category">
+                          <option value="category1">Category Name</option>
+                          <option value="category2">Category Name</option>
+                          <option value="category3">Category Name</option>
+                        </select>
+                    </div>
+                    
+                    <div class="column column-25 column-offset-25">
+                        <label for="deadline">By when?</label>
+                        <input type="date" placeholder="Deadline" id="'deadline">
+                    </div>
+
+                </div>
+
+          <input class="button-primary" type="submit" value="Create a List">
+        </fieldset>
+      </form>
+
+
+</div>
 
 {% endblock %}
