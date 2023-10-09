@@ -40,6 +40,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     authenticated = db.Column(db.Boolean, default=False)
+    about_me = db.Column(db.String(256))
 
     def __repr__(self):
         return "<User %r>" % self.username
@@ -119,7 +120,7 @@ def signin():
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
-            return redirect(url_for("profile"))
+            return redirect(url_for("dashboard"))
 
         else:
             flash("Invalid login credentials")
@@ -170,17 +171,32 @@ def list():
     return render_template("list.html", list=list)
 
 
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def dashboard():
+    """Opens dashboard page for logged in user"""
+    if request.method == "POST":
+        current_user.username = request.form.get("username")
+        current_user.email = request.form.get("email")
+        current_user.about_me = request.form.get("about-me")
+
+        try:
+            db.session.commit()
+            flash("User details updated successfully.", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred while updating user details: {str(e)}", "danger")
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("dashboard.html")
+
+
 # @app.route("/profile/<int:id>")
 # @login_required
 # def profile(id):
 #     user = User.query.filter_by(id=id).first()
 #     return render_template("profile.html", user=user)
-
-
-@app.route("/profile")
-@login_required
-def profile():
-    return render_template("profile.html", user=current_user)
 
 
 if __name__ == "__main__":
