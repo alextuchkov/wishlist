@@ -21,6 +21,7 @@ db.sqlite
 alembic
 alembic.ini
 instance
+migrations
 
 # Coverage reports
 htmlcov/

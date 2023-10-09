@@ -1,21 +1,34 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash, url_for, redirect
 import models
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import (
+    LoginManager,
+    login_required,
+    login_user,
+    logout_user,
+    current_user,
+)
 
 
 app = Flask(__name__)
 
+
 app.config["SECRET_KEY"] = "secret-key-goes-here"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
+app.config[
+    "SQLALCHEMY_DATABASE_URI"
+] = "sqlite:////Users/oleksandrtuchkov/Documents/Code/wishlist/db.sqlite"
 engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 Session = sessionmaker(bind=engine)
-
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class User(db.Model):
@@ -24,7 +37,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)  # Add this line
+    password_hash = db.Column(db.String(128), nullable=False)
+    authenticated = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return "<User %r>" % self.username
@@ -65,6 +79,13 @@ def index():
     return render_template("index.html")
 
 
+@login_manager.user_loader
+def user_loader(user_id):
+    # return User.query.get(user_id)
+    with app.app_context():
+        return db.session.get(User, user_id)
+
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -78,23 +99,43 @@ def signup():
         session.add(new_user)
         session.commit()
         session.close()
+        return redirect(url_for("signin"))
     return render_template("auth.html")
 
 
-# @app.route('/signin', methothd=["GET", "POST"])
-# def signin():
-#     if request.method == "POST":
-#         email=request.form.get("email")
-#         checkked_pass = check_password_hash(request.form.get("password"))
-#     return render_template('auth.html')
+@app.route("/signin", methods=["GET", "POST"])
+def signin():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # Check if a valid user with the provided email exists
+        user = User.query.filter_by(email=email).first()
+        valid_pass = check_password_hash(user.password_hash, password)
+
+        if user and valid_pass:
+            user.authenticated = True
+            db.session.add(user)
+            db.session.commit()
+            login_user(user, remember=True)
+            return redirect(url_for("profile"))
+
+        else:
+            flash("Invalid login credentials")
+
+    # Render the login template for both GET and unsuccessful POST requests
+    return render_template("login.html")
 
 
-# @app.route("/profile/")
-# def profile():
-#     return render_template("profile.html")
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 
 @app.route("/new", methods=["GET", "POST"])
+@login_required
 def new():
     if request.method == "POST":
         new_list = List(
@@ -113,20 +154,28 @@ def new():
 
 
 @app.route("/edit")
+@login_required
 def edit():
     return render_template("edit.html")
 
 
-@app.route("/list")
+@app.route("/list/<int:id>")
 def list():
-    return render_template("list.html")
+    list = List.query.filter_by(id=id).first()
+    return render_template("list.html", list=list)
 
 
-@app.route("/user/<int:id>")
-def user_detail(id):
-    user = User.query.filter_by(id=id).first()
+# @app.route("/profile/<int:id>")
+# @login_required
+# def profile(id):
+#     user = User.query.filter_by(id=id).first()
+#     return render_template("profile.html", user=user)
 
-    return render_template("profile.html", user=user)
+
+@app.route("/profile")
+@login_required
+def profile():
+    return render_template("profile.html", user=current_user)
 
 
 if __name__ == "__main__":

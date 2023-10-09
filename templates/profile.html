@@ -1,47 +1,37 @@
 {% extends 'base.html' %}
 
-<title>{% block title %}{{ user.id }}{% endblock %}</title>
+<title>{% block title %}Profile {{ current_user.username }}{% endblock %}</title>
 
 {% block content %}
+{% if current_user.is_authenticated %}
 
-    <div class="row">
-        <div class="column">
-             <nav class="header">
-                <a class="float-left" href="/"><h1>Whishlist</h1></a>
-                <a class="float-right" href="{{ url_for('new')}}">Create a List</a>
-            </nav>
-        </div>
-    </div>
 
     <div class="content">
-        <h2>Your Profile</h2>
+        <h2>Your data in control: {{ current_user.username }} | #{{ current_user.id }}</h2>
 
         <form >
             <fieldset>
                 <div>
-                    <label for="aligned-name">Ваше імʼя</label>
-                    <input type="text" id="aligned-name" disabled="" placeholder="Олександр Тучков" />
+                    <label for="aligned-name">Your Name</label>
+                    <input type="text" id="aligned-name" disabled="" placeholder="current_user.username" />
                 </div>
                 <div>
                     <label for="aligned-email">Email</label>
-                    <input type="email" id="aligned-email" disabled="" placeholder="email@email.com" />
+                    <input type="email" id="aligned-email" disabled="" placeholder="current_user.email" />
                 </div>
                 <div>
-                    <label for="aligned-foo">Доставка</label>
-                    <input type="text" id="aligned-foo" disabled="" placeholder="Харків, НП 123, 0935204776" />
-                </div>
-                <div class="pure-controls">
+                  <label for="aligned-pss">Password</label>
+                  <input type="email" id="aligned-pss" disabled="" placeholder="******"/>
+              </div>
     
-                    <button type="submit">Змінити данні</button>
-                </div>
+                    <button type="submit">Change Details</button>
+             
             </fieldset>
         </form>
 
 
     </div>
         
-
-     
             <h3>My Lists:</h2>
             <table>
                 <thead>
@@ -100,4 +90,5 @@
 
 
 
+              {% endif %}
 {% endblock %}

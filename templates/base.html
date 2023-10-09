@@ -21,15 +21,29 @@
 </head>
 <body>
     <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                 </ul>
+            {% endif %}
+        {% endwith %}
 
-        <!-- <div class="row">
+        <div class="row">
             <div class="column">
+                {% if current_user.is_authenticated %}
                 <nav class="header">
-                    <a class="float-left" href=""><h1>Whishlist</h1></a>
-                    <a class="float-right" href="{{ url_for('new')}}">Create a List</a>
+                        <a class="float-left" href=""><h1>Whishlist</h1></a>
+                        <a class="float-right" href="{{ url_for('profile') }}">Profile</a>
+
+                        <a class="float-right" href="{{ url_for('new')}}">Create a List</a>
+                        <a class="float-right" href="{{ url_for('logout')}}">Logout</a>
                 </nav>
+                {% endif %}
             </div>
-        </div> -->
+        </div>
         {% block content %} {% endblock %}
 
 
