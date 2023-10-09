@@ -12,6 +12,7 @@ from flask_login import (
     logout_user,
     current_user,
 )
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -138,11 +139,15 @@ def logout():
 @login_required
 def new():
     if request.method == "POST":
+        deadline_date = datetime.strptime(
+            request.form.get("deadline"), "%Y-%m-%d"
+        ).date()
+
         new_list = List(
             list_name=request.form.get("list_name"),
             list_description=request.form.get("description"),
             list_category=request.form.get("category"),
-            deadline=request.form.get("deadline"),
+            deadline=deadline_date,
         )
 
         session = Session()
