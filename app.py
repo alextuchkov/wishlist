@@ -198,11 +198,10 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-# @app.route("/profile/<int:id>")
-# @login_required
-# def profile(id):
-#     user = User.query.filter_by(id=id).first()
-#     return render_template("profile.html", user=user)
+@app.route("/profile/<int:id>")
+def profile(id):
+    user = User.query.filter_by(id=id).first()
+    return render_template("profile.html", user=user)
 
 
 if __name__ == "__main__":
