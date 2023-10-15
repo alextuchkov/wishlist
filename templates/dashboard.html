@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+<title>{% block title %}Dashboard: {{ current_user.username }}{% endblock %}</title>
+
+{% block content %}
+{% if current_user.is_authenticated %}
+
+
+    <div class="content">
+        <h2>Your data in control: {{ current_user.username }} | #{{ current_user.id }}</h2>
+
+        <form id="editForm" method="post">
+          <fieldset>
+              <div>
+                  <label for="name">Your Name</label>
+                  <input type="text" name='username' id="username" disabled placeholder="{{ current_user.username }}">
+              </div>
+              <div>
+                  <label for="email">Email</label>
+                  <input type="email" name='email' id="email" disabled placeholder="{{ current_user.email }}">
+              </div>
+
+              <div>
+                  <label for="about-me">About Me</label>
+                  <textarea name="about-me" id="about-me" cols="30" rows="10" disabled placeholder=" {% if not current_user.about_me %}Add about me text here{% else %}{{ current_user.about_me }}{% endif %} "></textarea>
+              </div>
+              <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit Details</button>
+               <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
+          </fieldset>
+      </form>
+      
+
+      <script>
+        function toggleButtons() {
+            const editBtn = document.getElementById('editDetailsBtn');
+            const saveBtn = document.getElementById('saveChangesBtn');
+    
+            if (editBtn.style.display !== 'none') {
+                // If Edit button is visible, hide it and show Save Changes button
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'block';
+    
+                // Enable form elements and copy placeholder to value
+                const formElements = document.getElementById('editForm').elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    const placeholder = formElements[i].getAttribute('placeholder');
+                    formElements[i].value = placeholder;
+                    formElements[i].disabled = false;
+                }
+            } else {
+                // If Save Changes button is visible, hide it and show Edit button
+                editBtn.style.display = 'block';
+                saveBtn.style.display = 'none';
+    
+                // Disable form elements
+                const formElements = document.getElementById('editForm').elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    formElements[i].disabled = true;
+                }
+            }
+        }
+    </script>
+    
+    <p>* <i>All profiels by default are public</i></p>
+      <hr>
+
+
+
+    </div>
+        
+            <h3>My Lists:</h2>
+            <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Created on</th>
+                    <th>Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+             
+   <hr>
+     
+
+              {% endif %}
+{% endblock %}
