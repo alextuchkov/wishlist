@@ -97,7 +97,6 @@ def signup():
             email=request.form.get("email"),
             password_hash=generated_password_hash,
         )
-        session = Session()
         session.add(new_user)
         session.commit()
         session.close()
@@ -123,7 +122,7 @@ def signin():
             return redirect(url_for("dashboard"))
 
         else:
-            flash("Invalid login credentials")
+            flash("Invalid login credentials", "error")
 
     # Render the login template for both GET and unsuccessful POST requests
     return render_template("login.html")
@@ -151,8 +150,7 @@ def new():
             deadline=deadline_date,
         )
 
-        # session = Session()
-
+        session.add(new_list)
         session.commit()
         session.close()
 
@@ -188,10 +186,10 @@ def dashboard():
             except Exception as e:
                 session.rollback()
                 flash(
-                    f"An error occurred while updating user details: {str(e)}", "danger"
+                    f"An error occurred while updating user details: {str(e)}", "error"
                 )
         else:
-            flash("User not found.", "danger")
+            flash("User not found.", "error")
 
         return redirect(url_for("dashboard"))
 

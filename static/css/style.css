@@ -648,11 +648,6 @@
     padding-bottom: 4rem;
  }
 
- .flashes {
-  border-radius: 10%;
-  border: 0.5px black solid;
- }
-
  .header {
   padding-top: 2rem;
  }
@@ -668,4 +663,32 @@
 
 #saveChangesBtn {
   display: none;
+}
+
+
+ul.flashes {
+  list-style-type: none;
+  padding: 10px;
+  margin: 0;
+}
+
+ul.flashes li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 5px;
+}
+
+ul.flashes li.success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+ul.flashes li.error {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
 }
