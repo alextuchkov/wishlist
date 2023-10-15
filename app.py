@@ -40,6 +40,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     authenticated = db.Column(db.Boolean, default=False)
+    active = db.Column(db.Boolean, default=False)
     about_me = db.Column(db.String(256))
 
     def __repr__(self):
@@ -57,20 +58,17 @@ class User(db.Model):
         """Return True if the user is authenticated."""
         return self.authenticated
 
-    def is_anonymous(self):
-        """False, as anonymous users aren't supported."""
-        return False
-
 
 class List(db.Model):
     """Lists connected to users, containing products"""
 
     id = db.Column(db.Integer, primary_key=True)
-    list_name = db.Column(db.String, nullable=False)
-    list_description = db.Column(db.String)
-    list_category = db.Column(db.String)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(256))
     deadline = db.Column(db.Date)
-    # list_items = db.Column(JSON)  # Assuming items will be stored as JSON
+    owner = db.Column(
+        db.Integer, db.ForeignKey("user.id", name="list_owner"), nullable=False
+    )
 
     def __repr__(self):
         return f"<List id={self.id}, list_name={self.list_name}, list_category={self.list_category}, deadline={self.deadline}>"
@@ -96,6 +94,7 @@ def signup():
             username=request.form.get("username"),
             email=request.form.get("email"),
             password_hash=generated_password_hash,
+            active=True,
         )
         session.add(new_user)
         session.commit()
@@ -112,15 +111,12 @@ def signin():
 
         # Check if a valid user with the provided email exists
         user = User.query.filter_by(email=email).first()
-        valid_pass = check_password_hash(user.password_hash, password)
 
-        if user and valid_pass:
+        if user and check_password_hash(user.password_hash, password):
             user.authenticated = True
-            db.session.add(user)
-            db.session.commit()
+            db.session.commit()  # Commit the change to the user
             login_user(user, remember=True)
             return redirect(url_for("dashboard"))
-
         else:
             flash("Invalid login credentials", "error")
 
@@ -144,10 +140,10 @@ def new():
         ).date()
 
         new_list = List(
-            list_name=request.form.get("list_name"),
-            list_description=request.form.get("description"),
-            list_category=request.form.get("category"),
+            name=request.form.get("list_name"),
+            description=request.form.get("description"),
             deadline=deadline_date,
+            owner=current_user.id,
         )
 
         session.add(new_list)
@@ -157,22 +153,63 @@ def new():
     return render_template("create.html")
 
 
-@app.route("/edit")
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
-def edit():
-    return render_template("edit.html")
+def edit(id):
+    list_item = session.query(List).filter_by(id=id).first()
+
+    if request.method == "POST":
+        deadline_date = datetime.strptime(
+            request.form.get("deadline"), "%Y-%m-%d"
+        ).date()
+
+        list_item.name = request.form.get("name")
+        list_item.description = request.form.get("description")
+        list_item.deadline = deadline_date
+
+        try:
+            session.commit()
+            flash("List details updated successfully.", "success")
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while updating list details: {str(e)}", "error")
+
+        return redirect(url_for("edit", id=list_item.id))  # Corrected redirect
+
+    return render_template("edit.html", list=list_item)
+
+
+@app.route("/delete/<int:id>", methods=["GET", "POST"])
+@login_required
+def delete(id):
+    list_item = session.query(List).filter_by(id=id).first()
+    if list_item:
+        try:
+            session.delete(list_item)
+            session.commit()
+            flash("List item deleted successfully.", "success")
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while deleting the list item: {str(e)}", "error")
+    else:
+        flash("List item not found.", "error")
+
+    return redirect(
+        url_for("dashboard")
+    )  # Redirect to the dashboard or another appropriate page
 
 
 @app.route("/list/<int:id>")
-def list():
-    list = List.query.filter_by(id=id).first()
-    return render_template("list.html", list=list)
+def list(id):
+    list_item = session.query(List).filter_by(id=id).first()
+    return render_template("list.html", list=list_item)
 
 
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
     """Opens dashboard page for logged in user"""
+    lists = session.query(List).filter_by(owner=current_user.id).all()
     if request.method == "POST":
         user = session.query(User).filter_by(id=current_user.id).first()
         if user:
@@ -193,13 +230,14 @@ def dashboard():
 
         return redirect(url_for("dashboard"))
 
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", lists=lists)
 
 
 @app.route("/profile/<int:id>")
 def profile(id):
     user = User.query.filter_by(id=id).first()
-    return render_template("profile.html", user=user)
+    lists = session.query(List).filter_by(owner=user.id).all()
+    return render_template("profile.html", user=user, lists=lists)
 
 
 if __name__ == "__main__":

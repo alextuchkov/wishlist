@@ -67,32 +67,39 @@
 
 
     </div>
-        
-            <h3>My Lists:</h2>
-            <table>
+        <div class="row">
+          <div class="column">
+            <h3>My Lists:</h3>
+          </div>
+          <div class="column">
+            <a class="button float-right" href="{{ url_for('new') }}">Create New List</a>
+          </div>
+
+        </div>
+            
+            
+
+              <table>
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Created on</th>
-                    <th>Link</th>
+                    <th>Deadline</th>
+                    <th>Action</th>
+               
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>List Name</td>
-                    <td>01/01/2023</td>
-                    <td><a class="button" href="#">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>List Name</td>
-                    <td>01/01/2023</td>
-                    <td><a class="button" href="#">View</a></td>
-                  </tr>
-                </tbody>
-              </table>
+                    {% for field in lists %}
+                    <tr>
+                      <td>{{ field.id }}</td>
+                      <td>{{ field.name }}</td>
+                      <td>{{ field.deadline }}</td>
+                      <td><a class="button" href="{{ url_for('list', id=field.id) }}">View</a>&nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Edit</a>&nbsp;<a class="button" href="{{ url_for('delete', id=field.id) }}">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
              
    <hr>
      
