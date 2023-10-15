@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+<title>{% block title %}Profile: {{ user.username }}{% endblock %}</title>
+
+{% block content %}
+
+
+    <div class="content">
+        <h2>Profile: {{ user.username }} | #{{ user.id }}</h2>
+        <div>
+            <textarea name="about-me" id="about-me" cols="30" rows="10" disabled placeholder=" {{ user.about_me }}"></textarea>
+        </div>
+      <hr>
+
+    </div>
+        
+            <h3>User Lists:</h2>
+            <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Created on</th>
+                    <th>Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>List Name</td>
+                    <td>01/01/2023</td>
+                    <td><a class="button" href="#">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+             
+   <hr>
+     
+{% endblock %}
