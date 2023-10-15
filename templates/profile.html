@@ -15,30 +15,26 @@
     </div>
         
             <h3>User Lists:</h2>
-            <table>
+              <table>
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Created on</th>
+                    <th>Deadline</th>
                     <th>Link</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>List Name</td>
-                    <td>01/01/2023</td>
-                    <td><a class="button" href="#">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>List Name</td>
-                    <td>01/01/2023</td>
-                    <td><a class="button" href="#">View</a></td>
-                  </tr>
-                </tbody>
-              </table>
+                    {% for field in lists %}
+                    <tr>
+                      <td>{{ field.id }}</td>
+                      <td>{{ field.name }}</td>
+                      <td>{{ field.deadline }}</td>
+                      <td><a class="button" href="{{ url_for('list', id=field.id) }}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
              
    <hr>
      

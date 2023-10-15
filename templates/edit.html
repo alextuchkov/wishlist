@@ -2,32 +2,59 @@
 <title>{% block title %}{% endblock %}</title>
 {% block content %}
 
-<div class="content">
-    <form>
-        <fieldset>
-            <input type="text" placeholder="Name your list" id="list_name">
-            <textarea placeholder="List Description" id="description"></textarea>
 
+<div class="content">
+    <form method="post" id="editForm">
+        <fieldset>
                 <div class="row">
-                    <div class="column column-50">
-                        <label for="category">List Category</label>
-                        <select id="category">
-                          <option value="category1">Category Name</option>
-                          <option value="category2">Category Name</option>
-                          <option value="category3">Category Name</option>
-                        </select>
+                    <div class="column column-75">
+                        
+                        <input type="text" disabled placeholder="{{ list.name }}" name="name">
                     </div>
                     
-                    <div class="column column-25 column-offset-25">
-                        <label for="deadline">By when?</label>
-                        <input type="date" placeholder="Deadline" id="'deadline">
+                    <div class="column column-25">
+                      
+                        <input type="date" disabled placeholder="{{ list.deadline}}" name="deadline">
                     </div>
-
+                    
                 </div>
+                <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
 
-          <input class="button-primary" type="submit" value="Create a List">
-        </fieldset>
-      </form>
+            <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit List Details</button>
+            <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
+       </fieldset>
+   </form>
+
+    <script>
+        function toggleButtons() {
+            const editBtn = document.getElementById('editDetailsBtn');
+            const saveBtn = document.getElementById('saveChangesBtn');
+
+            if (editBtn.style.display !== 'none') {
+                // If Edit button is visible, hide it and show Save Changes button
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'block';
+
+                // Enable form elements and copy placeholder to value
+                const formElements = document.getElementById('editForm').elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    const placeholder = formElements[i].getAttribute('placeholder');
+                    formElements[i].value = placeholder || ''; // Use placeholder or empty string
+                    formElements[i].disabled = false;
+                }
+            } else {
+                // If Save Changes button is visible, hide it and show Edit button
+                editBtn.style.display = 'block';
+                saveBtn.style.display = 'none';
+
+                // Disable form elements
+                const formElements = document.getElementById('editForm').elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    formElements[i].disabled = true;
+                }
+            }
+        }
+    </script>
 
 
 </div>

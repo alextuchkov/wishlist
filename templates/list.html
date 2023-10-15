@@ -2,4 +2,30 @@
 
 {% block content %}
 
+<div class="content">
+    <form>
+        <fieldset>
+            <div class="row">
+                <div class="column column-75">
+                    
+                    <input type="text" disabled placeholder="{{ list.name }}" name="list_name">
+                </div>
+                
+                <div class="column column-25">
+                  
+                    <input type="date" disabled placeholder="{{ list.deadline}}" name="deadline">
+                </div>
+                
+            </div>
+            <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
+        
+          <input class="button-primary" type="submit" value="Create a List">
+        </fieldset>
+      </form>
+</div>
+
+
+
+
+
 {% endblock %}
