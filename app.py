@@ -26,7 +26,7 @@ engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 Session = sessionmaker(bind=engine)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
+session = Session()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -151,8 +151,8 @@ def new():
             deadline=deadline_date,
         )
 
-        session = Session()
-        session.add(new_list)
+        # session = Session()
+
         session.commit()
         session.close()
 
@@ -176,16 +176,22 @@ def list():
 def dashboard():
     """Opens dashboard page for logged in user"""
     if request.method == "POST":
-        current_user.username = request.form.get("username")
-        current_user.email = request.form.get("email")
-        current_user.about_me = request.form.get("about-me")
+        user = session.query(User).filter_by(id=current_user.id).first()
+        if user:
+            user.username = request.form.get("username")
+            user.email = request.form.get("email")
+            user.about_me = request.form.get("about-me")
 
-        try:
-            db.session.commit()
-            flash("User details updated successfully.", "success")
-        except Exception as e:
-            db.session.rollback()
-            flash(f"An error occurred while updating user details: {str(e)}", "danger")
+            try:
+                session.commit()
+                flash("User details updated successfully.", "success")
+            except Exception as e:
+                session.rollback()
+                flash(
+                    f"An error occurred while updating user details: {str(e)}", "danger"
+                )
+        else:
+            flash("User not found.", "danger")
 
         return redirect(url_for("dashboard"))
 

@@ -22,10 +22,10 @@
 
               <div>
                   <label for="about-me">About Me</label>
-                  <textarea name="about-me" id="about-me" cols="30" rows="10" disabled placeholder=" {% if not current_user.about_me %}Add about me text here"{% else %}{{ current_user.about_me }}{% endif %}></textarea>
+                  <textarea name="about-me" id="about-me" cols="30" rows="10" disabled placeholder=" {% if not current_user.about_me %}Add about me text here{% else %}{{ current_user.about_me }}{% endif %} "></textarea>
               </div>
               <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit Details</button>
-               <button type="submit" id="saveChangesBtn">Save Changes</button>
+               <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
           </fieldset>
       </form>
       
@@ -61,7 +61,7 @@
         }
     </script>
     
-
+    <p>* <i>All profiels by default are public</i></p>
       <hr>
 
 
