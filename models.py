@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -45,3 +45,19 @@ class List(Base):
 
     def __repr__(self):
         return f"<List id={self.id}, name={self.name}, description={self.description}, deadline={self.deadline}>"
+
+
+class ListItem(Base):
+    __tablename__ = "list_items"
+
+    id = Column(Integer, primary_key=True)
+    item_name = Column(String(200), nullable=False)
+    item_description = Column(String(256))
+    url = Column(String(512))
+    price = Column(Numeric(precision=10, scale=2))
+    list = Column(Integer, ForeignKey("lists.id"), nullable=False)
+
+    def __repr__(self):
+        return (
+            f"<ListItem id={self.ide}, item_name={self.item_name}, list in={self.list}"
+        )

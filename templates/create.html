@@ -2,30 +2,30 @@
 
 {% block content %}
 
-
 <div class="content">
-    <form method="post">
+    <form method="post" action="/new">
         <fieldset>
             <div class="row">
                 <div class="column column-75">
                     <label for="list_name">Provide List Name</label>
-                    <input type="text" placeholder="Name your list" name="list_name">
+                    <input type="text" required placeholder="Name your list" name="list_name" id="list_name">
                 </div>
-                
+
                 <div class="column column-25">
                     <label for="deadline">By when?</label>
-                    <input type="date" placeholder="Deadline" name="deadline">
+                    <input type="date" required placeholder="Deadline" name="deadline" id="deadline">
                 </div>
-                
             </div>
-            <textarea placeholder="List Description" name="description"></textarea>
+            <textarea placeholder="List Description" name="description" id="list_description"></textarea>
 
-          <input class="button-primary" type="submit" value="Create a List">
+
+            <input class="button-primary" type="submit" value="Create a List">
         </fieldset>
-      </form>
-
-
+    </form>
 </div>
 
 
 {% endblock %}
+
+
+ 

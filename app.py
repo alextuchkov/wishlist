@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_login import LoginManager
-from models import Base  # Import the Base from models
+from models import Base 
 
 app = Flask(__name__)
 

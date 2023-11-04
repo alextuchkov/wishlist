@@ -1,6 +1,6 @@
-from flask import render_template, request, flash, url_for, redirect
+from flask import render_template, request, flash, url_for, redirect, jsonify
 
-from models import User, List
+from models import User, List, ListItem
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import (
     login_required,
@@ -71,25 +71,64 @@ def logout():
     return redirect(url_for("index"))
 
 
+# @app.route("/new", methods=["GET", "POST"])
+# @login_required
+# def new():
+#     if request.method == "POST":
+#         deadline_date = datetime.strptime(
+#             request.form.get("deadline"), "%Y-%m-%d"
+#         ).date()
+
+#         new_list = List(
+#             name=request.form.get("list_name"),
+#             description=request.form.get("description"),
+#             deadline=deadline_date,
+#             owner=current_user.id,
+#         )
+
+#         session.add(new_list)
+#         session.commit()
+#         session.close()
+
+#     return render_template("create.html")
+
+
 @app.route("/new", methods=["GET", "POST"])
 @login_required
 def new():
     if request.method == "POST":
-        deadline_date = datetime.strptime(
-            request.form.get("deadline"), "%Y-%m-%d"
-        ).date()
+        try:
+            # data = request.get_json()  # Parse the JSON data from the client
+            # # Access data using data['key']
+            # list_name = data["listName"]
+            # deadline = data["deadline"]
+            # list_description = data["listDescription"]
+            # items = data["items"]
 
-        new_list = List(
-            name=request.form.get("list_name"),
-            description=request.form.get("description"),
-            deadline=deadline_date,
-            owner=current_user.id,
-        )
+            # Process and store the data as needed (e.g., in a database)
+            new_list_name = request.form.get("list_name")
+            new_list_descrp = request.form.get("list_description")
+            deadline = datetime.strptime(
+                request.form.get("deadline"), "%Y-%m-%d"
+            ).date()
 
-        session.add(new_list)
-        session.commit()
-        session.close()
+            new_list = List(
+                name=new_list_name,
+                description=new_list_descrp,
+                deadline=deadline,
+                owner=current_user.id,
+            )
 
+            session.add(new_list)
+            session.commit()
+            session.close()
+            newly_created_list = (
+                session.query(List).filter_by(name=new_list_name).first()
+            )
+            return redirect(url_for("edit", id=newly_created_list.id))
+
+        except Exception as e:
+            return "Some Error"
     return render_template("create.html")
 
 
@@ -97,6 +136,7 @@ def new():
 @login_required
 def edit(id):
     list_item = session.query(List).filter_by(id=id).first()
+    list_single_item = session.query(ListItem).filter_by(list=list_item.id).all()
 
     if request.method == "POST":
         deadline_date = datetime.strptime(
@@ -114,9 +154,40 @@ def edit(id):
             session.rollback()
             flash(f"An error occurred while updating list details: {str(e)}", "error")
 
-        return redirect(url_for("edit", id=list_item.id))  # Corrected redirect
+        return redirect(url_for("edit", id=list_item.id))
 
-    return render_template("edit.html", list=list_item)
+    return render_template(
+        "edit.html", list=list_item, list_signle_item=list_single_item
+    )
+
+
+@app.route("/add_list_item", methods=["GET", "POST"])
+@login_required
+def add_list_item():
+    if request.method == "POST":
+        item_name = request.form.get("item-name")
+        item_description = request.form.get("item-description")
+        item_price = request.form.get("item-price")
+        item_url = request.form.get("item-link")
+        ref_id = request.form.get("ref-id")
+
+        new_list_item = ListItem(
+            item_name=item_name,
+            item_description=item_description,
+            price=item_price,
+            url=item_url,
+            list=ref_id
+        )
+        try:
+            session.add(new_list_item)
+            session.commit()
+            flash("List Item added successfully.", "success")
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while adding list item: {str(e)}", "error")
+
+        return redirect(url_for("edit", id=ref_id))
+      
 
 
 @app.route("/delete/<int:id>", methods=["GET", "POST"])

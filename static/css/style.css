@@ -692,3 +692,21 @@ ul.flashes li.error {
   border-color: #f5c6cb;
   color: #721c24;
 }
+
+.list-name {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 5px;
+}
+
+.list-item {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 5px;
+}
