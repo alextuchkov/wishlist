@@ -1,29 +1,59 @@
 {% extends 'base.html' %}
-<title>{% block title %}{% endblock %}</title>
+<title>{% block title %}{{ title }}{% endblock %}</title>
 {% block content %}
 
 
 <div class="content">
     <form method="post" id="editForm">
         <fieldset>
+            <div class="list-name">
                 <div class="row">
                     <div class="column column-75">
-                        
-                        <input type="text" disabled placeholder="{{ list.name }}" name="name">
+                        <input type="text" disabled placeholder="{{ list.name }} - {{ list.id }}" name="name">
                     </div>
                     
                     <div class="column column-25">
-                      
-                        <input type="date" disabled placeholder="{{ list.deadline}}" name="deadline">
+                        <input type="date" disabled value="{{ list.deadline}}" name="deadline">
                     </div>
-                    
                 </div>
                 <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
+                
+                <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit List Details</button>
+                <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
+            </div>
 
-            <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit List Details</button>
-            <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
        </fieldset>
    </form>
+
+   {% for item in list_items %}
+    <form action="/update_list_item" method="post">
+        <div class="list-item-added">
+            <input type="hidden" name="item-id" value="{{ item.id }}">
+            <input type="hidden" name="ref-id" value="{{ list.id }}">
+            <input type="text" name="item-name" value="{{item.item_name}}">
+            <textarea name="item-description">{{ item.item_description }}</textarea>
+            <input type="text" name="item-link" value="{{item.url}}">
+            <input type="text" name="item-price" value="{{item.price}}">
+            <input type="submit" value="Update">&nbsp;
+            <a class="button" href="{{ url_for('delete_list_item', id=item.id) }}">Delete</a>
+        </div>
+    </form>
+   {% endfor %}
+
+<hr>
+
+   <form action="/add_list_item" method="post">
+    <div class="list-item">
+        <input type="text" name="item-name" placeholder="List Item Name">
+        <textarea name="item-description" placeholder="Item Description"></textarea>
+        <input type="text" name="item-link" placeholder="Item Link">
+        <input type="text" name="item-price" placeholder="Item Price">
+        <input type="hidden" name="ref-id" value="{{ list.id }}">
+    </div>
+
+    <input class="button-primary" type="submit" value="Add Item">
+</form>
+
 
     <script>
         function toggleButtons() {

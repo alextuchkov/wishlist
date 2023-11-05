@@ -13,11 +13,21 @@
                 
                 <div class="column column-25">
                   
-                    <input type="date" disabled placeholder="{{ list.deadline}}" name="deadline">
+                    <input type="text" disabled placeholder="{{ list.deadline}}" name="deadline">
                 </div>
                 
             </div>
             <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
+
+            {% for item in list_items %}
+            <div class="list-item">
+                <input type="text" name="item-name" disabled placeholder="{{item.item_name}}">
+                <textarea name="item-description" disabled placeholder="{{item.item_description}}"></textarea>
+                <input type="text" name="item-link" disabled placeholder="{{item.url}}">
+                <input type="text" name="item-price" disabled placeholder="{{item.price}}">
+            </div>
+       {% endfor %}
+
         
         </fieldset>
       </form>
