@@ -656,6 +656,9 @@
 
 } */
 
+.footer {
+  padding-top: 4rem;
+}
 .footer img {
   padding-left: 5px;
 }
@@ -717,4 +720,19 @@ ul.flashes li.error {
   border: 1px solid #ccc;
   color: #333;
   border-radius: 5px;
+}
+
+.list-item-booked {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: rgb(217, 223, 217);
+  color: #333;
+  border-radius: 5px;
+  text-decoration: line-through;
+}
+
+.center-image {
+  display: block;
+  margin: 0 auto;
 }

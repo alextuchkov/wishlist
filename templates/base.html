@@ -22,6 +22,7 @@
 </head>
 <body>
     <div class="container">
+        <!-- Flash messages output -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul class="flashes">
@@ -30,25 +31,30 @@
                 {% endfor %}
              </ul>
         {% endif %}
-    {% endwith %}
+        {% endwith %}
     
-
-        <div class="row">
-            <div class="column">
-                {% if current_user.is_authenticated %}
         <nav class="header">
-            <a class="button" href="{{ url_for('dashboard') }}">Dashboard</a>   
-       
-            <a class="button float-right" href="{{ url_for('logout')}}">Logout</a>
-        </nav>
-                {% endif %}
+            <a href="/"><img src="{{ url_for('static', filename='img/logo.svg') }}" class="center-image" alt="logo"></a>
+            
+
+            <div class="row">
+                <div class="column">
+                    {% if current_user.is_authenticated %}
+            <nav class="header">
+                <a class="button" href="{{ url_for('dashboard') }}">Ваш профіль</a>   
+           
+                <a class="button float-right" href="{{ url_for('logout')}}">Вийти</a>
+            </nav>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+
+        </nav>
         {% block content %} {% endblock %}
 
 
             <nav class="footer">
-                <p class="float-left">Проєкт зроблено в рамках школи</p>
+                <p class="float-left">Дипломний проєкт зроблено в рамках школи</p>
                 <img src="{{ url_for('static', filename='img/ba.svg') }}" height="12" alt="beetroot">
             </nav>
 </div>

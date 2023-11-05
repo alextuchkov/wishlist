@@ -1,6 +1,7 @@
 from flask import render_template, request, flash, url_for, redirect, jsonify
+from sqlalchemy.orm import joinedload
 
-from models import User, List, ListItem
+from models import User, List, ListItem, Comment, FollowedLists
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import (
     login_required,
@@ -110,27 +111,37 @@ def edit(id):
     list = session.query(List).filter_by(id=id).first()
     list_items = session.query(ListItem).filter_by(list=list.id).all()
 
+    return render_template(
+        "edit.html", list=list, list_items=list_items, title=page_title
+    )
+
+
+@app.route("/edit_list", methods=["POST"])
+@login_required
+def edit_list():
     if request.method == "POST":
+        list_id = request.form.get("list-id")
+        list_name = request.form.get("name")
+        list_description = request.form.get("description")
         deadline_date = datetime.strptime(
             request.form.get("deadline"), "%Y-%m-%d"
         ).date()
 
-        list.name = request.form.get("name")
-        list.description = request.form.get("description")
-        list.deadline = deadline_date
+        list = session.query(List).filter_by(id=list_id).first()
+
+        if list is not None:
+            list.name = list_name
+            list.description = list_description
+            list.deadline = deadline_date
 
         try:
             session.commit()
-            flash("List details updated successfully.", "success")
+            flash("List updated successfully.", "success")
         except Exception as e:
             session.rollback()
-            flash(f"An error occurred while updating list details: {str(e)}", "error")
+            flash(f"An error occurred while updating List: {str(e)}", "error")
 
-        return redirect(url_for("edit", id=list.id))
-
-    return render_template(
-        "edit.html", list=list, list_items=list_items, title=page_title
-    )
+        return redirect(url_for("edit", id=list_id))
 
 
 @app.route("/add_list_item", methods=["GET", "POST"])
@@ -229,16 +240,100 @@ def delete(id):
 @app.route("/list/<int:id>")
 def list(id):
     list = session.query(List).filter_by(id=id).first()
+    page_title = f"{list.name}"
     list_items = session.query(ListItem).filter_by(list=list.id).all()
+    try:
+        followed_list_references = (
+            session.query(FollowedLists).filter_by(follower=current_user.id).all()
+        )
 
-    return render_template("list.html", list=list, list_items=list_items)
+        # join
+        followed_lists = [
+            session.query(List).filter_by(id=followed_list.list).first()
+            for followed_list in followed_list_references
+        ]
+
+        return render_template(
+            "list.html",
+            list=list,
+            list_items=list_items,
+            title=page_title,
+            followed_lists=followed_lists,
+        )
+    except Exception as e:
+        # flash(f"Error: {str(e)}", "error")
+        pass
+
+    return render_template(
+        "list.html",
+        list=list,
+        list_items=list_items,
+        title=page_title,
+    )
+
+
+@app.route("/book", methods=["POST"])
+@login_required
+def book():
+    item_id = request.form.get("item-id")
+    ref_id = request.form.get("ref-id")
+
+    list_item = session.query(ListItem).filter_by(id=item_id).first()
+
+    if list_item is not None:
+        list_item.is_booked = True
+        list_item.booked_by = current_user.id
+
+    try:
+        session.commit()
+        flash("You booked item!", "success")
+    except Exception as e:
+        session.rollback()
+        flash(f"An error occurred while booking item: {str(e)}", "error")
+
+    return redirect(url_for("list", id=ref_id))
+
+
+@app.route("/toggle_follow", methods=["POST"])
+@login_required
+def toggle_follow():
+    list_id = request.form.get("list_id")
+    user_id = current_user.id
+
+    # Check if the user is already following the list
+    followed_list = (
+        session.query(FollowedLists).filter_by(list=list_id, follower=user_id).first()
+    )
+
+    if followed_list:
+        # If the user is following the list, unfollow it
+        session.delete(followed_list)
+        session.commit()
+        flash("Ви відписалися від списку.", "success")
+    else:
+        # If the user is not following the list, follow it
+        new_followed = FollowedLists(list=list_id, follower=user_id)
+        session.add(new_followed)
+        session.commit()
+        flash("Ви слідкуєте за списком.", "success")
+
+    return redirect(url_for("list", id=list_id))
 
 
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    """Opens dashboard page for logged in user"""
     lists = session.query(List).filter_by(owner=current_user.id).all()
+
+    followed_list_references = (
+        session.query(FollowedLists).filter_by(follower=current_user.id).all()
+    )
+
+    followed_lists = [
+        session.query(List).filter_by(id=followed_list.list).first()
+        for followed_list in followed_list_references
+    ]
+
     if request.method == "POST":
         user = session.query(User).filter_by(id=current_user.id).first()
         if user:
@@ -259,4 +354,35 @@ def dashboard():
 
         return redirect(url_for("dashboard"))
 
-    return render_template("dashboard.html", lists=lists)
+    return render_template("dashboard.html", lists=lists, followed_lists=followed_lists)
+
+
+@app.route("/listitem/<int:id>/comments")
+def comments(id):
+    page_title = "Комментарі"
+    comments = session.query(Comment).filter_by(list_item=id).all()
+    list_item = session.query(ListItem).filter_by(id=id).first()
+
+    return render_template(
+        "comments.html", comments=comments, title=page_title, list_item=list_item
+    )
+
+
+@app.route("/comment<int:id>", methods=["POST"])
+@login_required
+def comment(id):
+    if request.method == "POST":
+        new_comment = Comment(
+            comment=request.form.get("comment"),
+            author_id=current_user.id,
+            list_item=id,
+        )
+        try:
+            session.add(new_comment)
+            session.commit()
+            flash("Ви залиши комментар.", "success")
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while adding list item: {str(e)}", "error")
+
+        return redirect(url_for("comments", id=id))

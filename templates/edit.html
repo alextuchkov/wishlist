@@ -4,22 +4,21 @@
 
 
 <div class="content">
-    <form method="post" id="editForm">
+    <form method="post" action="/edit_list">
         <fieldset>
             <div class="list-name">
                 <div class="row">
                     <div class="column column-75">
-                        <input type="text" disabled placeholder="{{ list.name }} - {{ list.id }}" name="name">
+                        <input type="hidden" name="list-id" value="{{ list.id }}">
+                        <input type="text" value="{{ list.name }}" name="name">
                     </div>
                     
                     <div class="column column-25">
-                        <input type="date" disabled value="{{ list.deadline}}" name="deadline">
+                        <input type="date" value="{{ list.deadline}}" name="deadline">
                     </div>
                 </div>
-                <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
-                
-                <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit List Details</button>
-                <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
+                <textarea name="description">{{ list.description }}</textarea>
+                <input type="submit" value="Edit List">
             </div>
 
        </fieldset>

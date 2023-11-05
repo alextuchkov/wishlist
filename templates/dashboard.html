@@ -7,12 +7,12 @@
 
 
     <div class="content">
-        <h2>Your data in control: {{ current_user.username }} | #{{ current_user.id }}</h2>
+        <h2>Привіт, {{ current_user.username }} | #{{ current_user.id }}</h2>
 
         <form id="editForm" method="post">
           <fieldset>
               <div>
-                  <label for="name">Your Name</label>
+                  <label for="name">Імʼя в системі</label>
                   <input type="text" name='username' id="username" disabled placeholder="{{ current_user.username }}">
               </div>
               <div>
@@ -21,11 +21,11 @@
               </div>
 
               <div>
-                  <label for="about-me">About Me</label>
+                  <label for="about-me">Інформація про тебе</label>
                   <textarea name="about-me" id="about-me" cols="30" rows="10" disabled placeholder=" {% if not current_user.about_me %}Add about me text here{% else %}{{ current_user.about_me }}{% endif %} "></textarea>
               </div>
-              <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Edit Details</button>
-               <button type="submit" id="saveChangesBtn" value="Save Changes">Save Changes</button>
+              <button type="button" id="editDetailsBtn" onclick="toggleButtons()">Редагувати деталі</button>
+               <button type="submit" id="saveChangesBtn" value="Save Changes">Зберегти зміни</button>
           </fieldset>
       </form>
       
@@ -61,29 +61,28 @@
         }
     </script>
     
-    <p>* <i>All profiels by default are public</i></p>
+    <p>* <i>Всі профілі публічні за замовчуванням</i></p>
       <hr>
 
     </div>
         <div class="row">
           <div class="column">
-            <h3>My Lists:</h3>
+            <h3>Ваші події:</h3>
           </div>
+
           <div class="column">
-            <a class="button float-right" href="{{ url_for('new') }}">Create New List</a>
+            <a class="button float-right" href="{{ url_for('new') }}">Створити нову подію</a>
           </div>
 
         </div>
             
-            
-
               <table>
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Name</th>
-                    <th>Deadline</th>
-                    <th>Action</th>
+                    <th>Назва</th>
+                    <th>Дата</th>
+                    <th>Дії</th>
                
                   </tr>
                 </thead>
@@ -93,13 +92,44 @@
                       <td>{{ field.id }}</td>
                       <td>{{ field.name }}</td>
                       <td>{{ field.deadline }}</td>
-                      <td><a class="button" href="{{ url_for('list', id=field.id) }}">View</a>&nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Edit</a>&nbsp;<a class="button" href="{{ url_for('delete', id=field.id) }}">Delete</a></td>
+                      <td><a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>&nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Редагувати</a>&nbsp;<a class="button" href="{{ url_for('delete', id=field.id) }}">Видалити</a></td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
              
-   <hr>
+          <hr>
+
+
+          <div class="row">
+            <div class="column">
+              <h3>Ви слідкуєте за наступними подіями:</h3>
+            </div>
+            </div>
+          
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Назва</th>
+                  <th>Дата</th>
+                  <th>Дії</th>
+             
+                </tr>
+              </thead>
+              <tbody>
+                  {% for field in followed_lists %}
+                  <tr>
+                    <td>{{ field.id }}</td>
+                    <td>{{ field.name }}</td>
+                    <td>{{ field.deadline }}</td>
+                    <td><a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <hr>
+      
      
 
               {% endif %}
