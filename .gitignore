@@ -22,6 +22,7 @@ alembic
 alembic.ini
 instance
 migrations
+instructions.txt
 
 # Coverage reports
 htmlcov/
