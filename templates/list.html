@@ -1,36 +1,63 @@
 {% extends 'base.html' %}
-
+<title>{% block title %}{{ title }}{% endblock %}</title>
 {% block content %}
 
 <div class="content">
-    <form>
-        <fieldset>
-            <div class="row">
-                <div class="column column-75">
-                    
-                    <input type="text" disabled placeholder="{{ list.name }}" name="list_name">
-                </div>
-                
-                <div class="column column-25">
-                  
-                    <input type="text" disabled placeholder="{{ list.deadline}}" name="deadline">
-                </div>
-                
-            </div>
-            <textarea disabled placeholder="{{ list.description }}" name="description"></textarea>
+    
+    <h1>{{ list.name }}</h1>
+    <p><b>Опис:</b> {{ list.description }}</p>
 
-            {% for item in list_items %}
-            <div class="list-item">
-                <input type="text" name="item-name" disabled placeholder="{{item.item_name}}">
-                <textarea name="item-description" disabled placeholder="{{item.item_description}}"></textarea>
-                <input type="text" name="item-link" disabled placeholder="{{item.url}}">
-                <input type="text" name="item-price" disabled placeholder="{{item.price}}">
-            </div>
-       {% endfor %}
-
+    <div class="row">
+        <div class="column">
+            <p><b>До коли:</b> {{ list.deadline}}</p>
+        </div>
         
-        </fieldset>
-      </form>
+        <!-- Follow unfollow logic -->
+        <div class="column">
+            <form method="post" action="{{ url_for('toggle_follow') }}">
+                <input type="hidden" name="list_id" value="{{ list.id }}">
+                <button type="submit" class="button float-right">
+                    {% if list in followed_lists %}
+                        Перестати Слідкувати
+                    {% else %}
+                        Слідкувати
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+        
+        
+        
+        
+
+      </div>
+
+
+    {% for item in list_items %}
+    <form action="{{ url_for('book') }}" method="post">
+        <div class="list-item{% if item.is_booked %}-booked{% endif %}">
+            <!-- {% if item.is_booked %}
+            <p>Хтось вже забронював цей товар за собою</p>
+            {% endif %} -->
+            <h3>{{item.item_name}}</h3>
+            <p>{{ item.item_description }}</p>
+            <p><b>Посилання:</b> {{item.url}}</p>
+            <p><b>Ціна:</b> {{item.price}} грн.</p>
+            <input type="hidden" name="item-id" value="{{ item.id }}">
+            <input type="hidden" name="ref-id" value="{{ list.id }}">
+
+            {% if not item.is_booked %}
+                <button type="submit" class="button">Куплю це сам</button>
+                <a class="button" href="#">Можу розділити</a>
+            {% endif %}
+
+            <a class="button" href="{{ url_for('comments', id=item.id) }}">Обговорення</a>
+        </div>
+    </form>
+    {% endfor %}
+
+
+
 </div>
 
 

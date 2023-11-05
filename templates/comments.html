@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+<title>{% block title %}{{ title }}{% endblock %}</title>
+{% block content %}
+
+
+
+<div class="content">
+        <a class="button" href="{{ url_for('list', id=list_item.list) }}">Повернутись до списку</a>
+        <div class="list-item{% if list_item.is_booked %}-booked{% endif %}">
+            <h3>{{list_item.item_name}}</h3>
+            <p>{{ list_item.item_description }}</p>
+            <p><b>Посилання:</b> {{list_item.url}}</p>
+            <p><b>Ціна:</b> {{list_item.price}} грн.</p>
+            <input type="hidden" name="item-id" value="{{ list_item.id }}">
+
+        </div>
+
+    <hr>
+    {% for comment in comments %}
+        <div class="list-item">
+            <p><b>{{ comment.author.username }} </b><i>залишив цей комментар о: </i>{{ comment.pub_date }}</p>
+            <p>{{ comment.comment }}</p>
+        </div>
+    {% endfor %}
+
+    <form action="{{ url_for('comment', id=list_item.id) }}" method="post">
+        <div class="list-item">
+            <textarea name="comment" placeholder="Почніть обговорення" cols="30" rows="10"></textarea>
+
+            <input type="submit" value="Обговорення">
+        </div>
+    </form>
+
+
+
+</div>
+
+
+{% endblock %}

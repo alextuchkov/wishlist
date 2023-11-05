@@ -1,5 +1,17 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey, Numeric
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Date,
+    Boolean,
+    ForeignKey,
+    Numeric,
+    DateTime,
+    func,
+)
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
 
 Base = declarative_base()
 
@@ -56,8 +68,30 @@ class ListItem(Base):
     url = Column(String(512))
     price = Column(Numeric(precision=10, scale=2))
     list = Column(Integer, ForeignKey("lists.id"), nullable=False)
+    is_booked = Column(Boolean, default=False)
+    booked_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     def __repr__(self):
         return (
             f"<ListItem id={self.ide}, item_name={self.item_name}, list in={self.list}"
         )
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True)
+    comment = Column(String(512), nullable=False)
+    pub_date = Column(DateTime, default=func.now())
+    is_flagged = Column(Boolean, default=False)
+    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    author = relationship("User", foreign_keys=[author_id])
+    list_item = Column(Integer, ForeignKey("list_items.id"), nullable=False)
+
+
+class FollowedLists(Base):
+    __tablename__ = "followed_lists"
+
+    id = Column(Integer, primary_key=True)
+    list = Column(Integer, ForeignKey("lists.id"), nullable=False)
+    follower = Column(Integer, ForeignKey("users.id"), nullable=False)
