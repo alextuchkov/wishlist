@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
-
+<title>{% block title %}{{ title }}{% endblock %}</title>
 {% block content %}
-
 
   <div class="row">
     <div class="jumbo">
         <div class="column column-80 column-offset-10">
-                <h1>Leverage the power of your community</h1>
-                <!-- <img src="{{ url_for('static', filename='img/hero.jpg') }}" alt="Hero Image"> -->
-                <p>"Whishlist" is a local platform uniting communities to compile joint shopping lists for collective purchases. This fosters collaboration, enhances purchasing power, and supports local businesses. The goal is to strengthen community bonds through sustainable and cost-effective shopping.</p>
+                
+                <h1>Wishlist - місце де де можна поділитись з друзями вашими бажаннями</h1>
+                <p>Раніше ви збирали людей у різних чатах і ділились з ними ідеями подарунків. Але зараз ви можете це зробити через Wishlist.
+                </p>
+                
                 {% if not current_user.is_authenticated %}
-
-                <a class="button" href="{{ url_for('signup')}}">Create Profile to Start</a>
-                <a class="button" href="{{ url_for('signin')}}">Login</a>
+                <a class="button" href="{{ url_for('signup')}}">Створити профіль</a>
+                <a class="button" href="{{ url_for('signin')}}">Увійти</a>
                 {% endif %}
                 
             </div>
@@ -23,18 +23,15 @@
   <div class="features">
       <div class="row">
         <div class="column column-25 column-offset-10">
-            <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, fugit minus pariatur sunt praesentium ipsum, voluptatem enim quam eius porro, placeat quo atque laborum dignissimos veniam nostrum consectetur sit corporis!
+            <p>Зберіть свої бажання в одному місці, і ніколи їх більше не губіть.
             </p>
         </div>
         <div class="column column-25">
-            <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, fugit minus pariatur sunt praesentium ipsum, voluptatem enim quam eius porro, placeat quo atque laborum dignissimos veniam nostrum consectetur sit corporis!
+            <p>Обʼєднайте друзів із різних компаній навколо списку ваших бажань, щоб досягнути максимальної ефективності.
             </p>
         </div>
         <div class="column column-25">
-            <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, fugit minus pariatur sunt praesentium ipsum, voluptatem enim quam eius porro, placeat quo atque laborum dignissimos veniam nostrum consectetur sit corporis!
+            <p>Друзі зможуть купити, розділити покупки або їх обговорити.
             </p>
         </div>
     

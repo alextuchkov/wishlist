@@ -242,22 +242,33 @@ def list(id):
     list = session.query(List).filter_by(id=id).first()
     page_title = f"{list.name}"
     list_items = session.query(ListItem).filter_by(list=list.id).all()
-    followed_list_references = (
-        session.query(FollowedLists).filter_by(follower=current_user.id).all()
-    )
+    try:
+        followed_list_references = (
+            session.query(FollowedLists).filter_by(follower=current_user.id).all()
+        )
 
-    # join
-    followed_lists = [
-        session.query(List).filter_by(id=followed_list.list).first()
-        for followed_list in followed_list_references
-    ]
+        # join
+        followed_lists = [
+            session.query(List).filter_by(id=followed_list.list).first()
+            for followed_list in followed_list_references
+        ]
+
+        return render_template(
+            "list.html",
+            list=list,
+            list_items=list_items,
+            title=page_title,
+            followed_lists=followed_lists,
+        )
+    except Exception as e:
+        # flash(f"Error: {str(e)}", "error")
+        pass
 
     return render_template(
         "list.html",
         list=list,
         list_items=list_items,
         title=page_title,
-        followed_lists=followed_lists,
     )
 
 
