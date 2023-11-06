@@ -1,4 +1,5 @@
-from flask import render_template, request, flash, url_for, redirect, jsonify
+from flask import render_template, request, flash, url_for, redirect
+
 from sqlalchemy.orm import joinedload
 
 from models import User, List, ListItem, Comment, FollowedLists
@@ -29,17 +30,34 @@ def user_loader(user_id):
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        generated_password_hash = generate_password_hash(request.form.get("password"))
-        new_user = User(
-            username=request.form.get("username"),
-            email=request.form.get("email"),
-            password_hash=generated_password_hash,
-            active=True,
-        )
-        session.add(new_user)
-        session.commit()
-        session.close()
-        return redirect(url_for("signin"))
+        try:
+            username = request.form.get("username")
+            email = request.form.get("email")
+            password = request.form.get("password")
+
+            if len(password) < 6:
+                flash("Password is less than 6 characters")
+            elif "@" not in email:
+                flash("Not a valid email")
+            else:
+                # Check if the email or username is already taken and handle appropriately
+                existing_user = session.query(User).filter_by(email=email).first()
+                if existing_user:
+                    flash("Email is already in use")
+                else:
+                    new_user = User(
+                        username=username,
+                        email=email,
+                        password_hash=generate_password_hash(password),
+                        active=True,
+                    )
+                    session.add(new_user)
+                    session.commit()
+                    return redirect(url_for("signin"))
+
+        except Exception as e:
+            flash("An error occurred while signing up")
+
     return render_template("auth.html")
 
 

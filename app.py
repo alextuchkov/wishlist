@@ -4,7 +4,8 @@ from flask_migrate import Migrate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_login import LoginManager
-from models import Base 
+from models import Base
+
 
 app = Flask(__name__)
 
@@ -24,6 +25,7 @@ login_manager.init_app(app)
 
 # Create tables
 Base.metadata.create_all(engine)
+
 
 if __name__ == "__main__":
     from views import *

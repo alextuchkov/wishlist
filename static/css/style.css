@@ -658,6 +658,7 @@
 
 .footer {
   padding-top: 4rem;
+  align-items: center;
 }
 .footer img {
   padding-left: 5px;
