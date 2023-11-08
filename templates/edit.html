@@ -11,6 +11,7 @@
                     <div class="column column-75">
                         <input type="hidden" name="list-id" value="{{ list.id }}">
                         <input type="text" value="{{ list.name }}" name="name">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     </div>
                     
                     <div class="column column-25">
@@ -33,6 +34,7 @@
             <textarea name="item-description">{{ item.item_description }}</textarea>
             <input type="text" name="item-link" value="{{item.url}}">
             <input type="text" name="item-price" value="{{item.price}}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="submit" value="Update">&nbsp;
             <a class="button" href="{{ url_for('delete_list_item', id=item.id) }}">Delete</a>
         </div>
@@ -48,6 +50,7 @@
         <input type="text" name="item-link" placeholder="Item Link">
         <input type="text" name="item-price" placeholder="Item Price">
         <input type="hidden" name="ref-id" value="{{ list.id }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     </div>
 
     <input class="button-primary" type="submit" value="Add Item">

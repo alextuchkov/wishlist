@@ -17,6 +17,7 @@
         <div class="column">
             <form method="post" action="{{ url_for('toggle_follow') }}">
                 <input type="hidden" name="list_id" value="{{ list.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="button float-right">
                     {% if list in followed_lists %}
                         Перестати Слідкувати
@@ -27,11 +28,6 @@
             </form>
         </div>
         {% endif %}
-        
-        
-        
-        
-
       </div>
 
 
@@ -47,6 +43,7 @@
             <p><b>Ціна:</b> {{item.price}} грн.</p>
             <input type="hidden" name="item-id" value="{{ item.id }}">
             <input type="hidden" name="ref-id" value="{{ list.id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             {% if current_user.is_authenticated %}
             {% if not item.is_booked %}

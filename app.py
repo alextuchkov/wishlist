@@ -5,9 +5,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_login import LoginManager
 from models import Base
+from flask_wtf.csrf import CSRFProtect
 
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 app.config["SECRET_KEY"] = "secret-key-goes-here"
 app.config[
@@ -30,4 +32,4 @@ Base.metadata.create_all(engine)
 if __name__ == "__main__":
     from views import *
 
-    app.run(debug=True)
+    app.run(debug=True, port=8085)

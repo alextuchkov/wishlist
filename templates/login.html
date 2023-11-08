@@ -10,7 +10,7 @@
 
                     <label for="email">Your Email</label>
                     <input name="email" type="email" placeholder="Your Email">
-
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <label for="password">Your Password</label>
                     <input name="password" type="password" placeholder="Your Password">
 

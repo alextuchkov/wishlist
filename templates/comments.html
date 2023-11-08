@@ -26,6 +26,7 @@
     <form action="{{ url_for('comment', id=list_item.id) }}" method="post">
         <div class="list-item">
             <textarea name="comment" placeholder="Почніть обговорення" cols="30" rows="10"></textarea>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <input type="submit" value="Обговорення">
         </div>

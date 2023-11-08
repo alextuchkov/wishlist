@@ -12,7 +12,7 @@ from flask_login import (
     login_manager,
 )
 from datetime import datetime
-from app import app, session, login_manager, db
+from app import app, session, login_manager
 
 
 @app.route("/")
@@ -22,7 +22,6 @@ def index():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    # return User.query.get(user_id)
     with app.app_context():
         return session.get(User, user_id)
 
@@ -30,21 +29,20 @@ def user_loader(user_id):
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        try:
-            username = request.form.get("username")
-            email = request.form.get("email")
-            password = request.form.get("password")
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-            if len(password) < 6:
-                flash("Password is less than 6 characters")
-            elif "@" not in email:
-                flash("Not a valid email")
+        if "@" not in email:
+            flash("Not a valid email")
+        elif len(password) < 6:
+            flash("Password is less than 6 characters")
+        else:
+            existing_user = session.query(User).filter_by(email=email).first()
+            if existing_user:
+                flash("Email is already in use")
             else:
-                # Check if the email or username is already taken and handle appropriately
-                existing_user = session.query(User).filter_by(email=email).first()
-                if existing_user:
-                    flash("Email is already in use")
-                else:
+                try:
                     new_user = User(
                         username=username,
                         email=email,
@@ -54,9 +52,8 @@ def signup():
                     session.add(new_user)
                     session.commit()
                     return redirect(url_for("signin"))
-
-        except Exception as e:
-            flash("An error occurred while signing up")
+                except Exception as e:
+                    flash("An error occurred while signing up")
 
     return render_template("auth.html")
 
@@ -72,13 +69,12 @@ def signin():
 
         if user and check_password_hash(user.password_hash, password):
             user.authenticated = True
-            db.session.commit()  # Use db.session to commit changes
+            session.commit()
             login_user(user, remember=True)
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid login credentials", "error")
 
-    # Render the login template for both GET and unsuccessful POST requests
     return render_template("login.html")
 
 
@@ -338,7 +334,7 @@ def toggle_follow():
     return redirect(url_for("list", id=list_id))
 
 
-@app.route("/dashboard", methods=["GET", "POST"])
+@app.route("/dashboard", methods=["GET"])
 @login_required
 def dashboard():
     lists = session.query(List).filter_by(owner=current_user.id).all()
@@ -352,27 +348,28 @@ def dashboard():
         for followed_list in followed_list_references
     ]
 
-    if request.method == "POST":
-        user = session.query(User).filter_by(id=current_user.id).first()
-        if user:
-            user.username = request.form.get("username")
-            user.email = request.form.get("email")
-            user.about_me = request.form.get("about-me")
-
-            try:
-                session.commit()
-                flash("User details updated successfully.", "success")
-            except Exception as e:
-                session.rollback()
-                flash(
-                    f"An error occurred while updating user details: {str(e)}", "error"
-                )
-        else:
-            flash("User not found.", "error")
-
-        return redirect(url_for("dashboard"))
-
     return render_template("dashboard.html", lists=lists, followed_lists=followed_lists)
+
+
+@app.route("/edit_dashboard", methods=["POST"])
+@login_required
+def edit_dashboard():
+    user = session.query(User).filter_by(id=current_user.id).first()
+    if user:
+        user.username = request.form.get("username")
+        user.email = request.form.get("email")
+        user.about_me = request.form.get("about-me")
+
+        try:
+            session.commit()
+            flash("User details updated successfully.", "success")
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while updating user details: {str(e)}", "error")
+    else:
+        flash("User not found.", "error")
+
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/listitem/<int:id>/comments")
