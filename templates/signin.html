@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+<title>{% block title %}{{ title }}{% endblock %}</title>
+{% block content %}
+
+<div class="content">
+    <h2>Користуйтесь системою з існуючим профілем:</h2>
+
+            <form method="post">
+                <fieldset>
+
+                    <label for="email">Email</label>
+                    <input required name="email" type="email" placeholder="email@email.com">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <label for="password">Пароль</label>
+                    <input required name="password" type="password" placeholder="Ваш пароль">
+
+                    <input class="button-primary" type="submit" value="Login">
+                </fieldset>
+            </form>
+     
+
+        <div>
+            <h5>Проблеми з доступом в систему? Напішіть на support@email.com</h5>
+        </div>
+    </div>
+
+
+
+{% endblock %}

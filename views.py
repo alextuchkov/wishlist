@@ -13,6 +13,7 @@ from flask_login import (
 )
 from datetime import datetime
 from app import app, session, login_manager
+from validations import is_valid_email, is_valid_password
 
 
 @app.route("/")
@@ -33,10 +34,11 @@ def signup():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        if "@" not in email:
+        if is_valid_email(email) == False:
             flash("Not a valid email")
-        elif len(password) < 6:
-            flash("Password is less than 6 characters")
+        # TODO Switch On password validation
+        # elif is_valid_password(password) == False:
+        #     flash("Password is less than 6 characters")
         else:
             existing_user = session.query(User).filter_by(email=email).first()
             if existing_user:
@@ -54,8 +56,8 @@ def signup():
                     return redirect(url_for("signin"))
                 except Exception as e:
                     flash("An error occurred while signing up")
-
-    return render_template("auth.html")
+    title = "Створити профіль"
+    return render_template("signup.html", title=title)
 
 
 @app.route("/signin", methods=["GET", "POST"])
@@ -66,16 +68,21 @@ def signin():
 
         # Check if a valid user with the provided email exists
         user = session.query(User).filter_by(email=email).first()
+        if is_valid_email(email) == False:
+            flash("Not a valid email")
+        # TODO Switch On password validation
+        # elif is_valid_password(password) == False:
+        #     flash("Password is not secure")
 
-        if user and check_password_hash(user.password_hash, password):
+        elif user and check_password_hash(user.password_hash, password):
             user.authenticated = True
             session.commit()
             login_user(user, remember=True)
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid login credentials", "error")
-
-    return render_template("login.html")
+    title = "Створити профіль"
+    return render_template("signin.html", title=title)
 
 
 @app.route("/logout")
@@ -347,8 +354,10 @@ def dashboard():
         session.query(List).filter_by(id=followed_list.list).first()
         for followed_list in followed_list_references
     ]
-
-    return render_template("dashboard.html", lists=lists, followed_lists=followed_lists)
+    title = "Профіль"
+    return render_template(
+        "dashboard.html", lists=lists, followed_lists=followed_lists, title=title
+    )
 
 
 @app.route("/edit_dashboard", methods=["POST"])
