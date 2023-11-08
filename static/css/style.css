@@ -686,15 +686,13 @@ ul.flashes li {
 }
 
 ul.flashes li.success {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-  color: #155724;
+  background-color: #d9ffe2;
+  color: #000000;
 }
 
 ul.flashes li.error {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
+  background-color: #886064;
+  color: #000000;
 }
 
 .list-name {

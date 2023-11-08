@@ -42,7 +42,7 @@ def signup():
         else:
             existing_user = session.query(User).filter_by(email=email).first()
             if existing_user:
-                flash("Email is already in use")
+                flash("Email is already in use", "error")
             else:
                 try:
                     new_user = User(
@@ -55,7 +55,7 @@ def signup():
                     session.commit()
                     return redirect(url_for("signin"))
                 except Exception as e:
-                    flash("An error occurred while signing up")
+                    flash("An error occurred while signing up", "error")
     title = "Створити профіль"
     return render_template("signup.html", title=title)
 
@@ -69,7 +69,7 @@ def signin():
         # Check if a valid user with the provided email exists
         user = session.query(User).filter_by(email=email).first()
         if is_valid_email(email) == False:
-            flash("Not a valid email")
+            flash("Not a valid email", "error")
         # TODO Switch On password validation
         # elif is_valid_password(password) == False:
         #     flash("Password is not secure")
