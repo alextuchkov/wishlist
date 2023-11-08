@@ -17,6 +17,7 @@
                 </div>
             </div>
             <textarea placeholder="List Description" name="list_description" id="list_description"></textarea>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
 
             <input class="button-primary" type="submit" value="Create a List">

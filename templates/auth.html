@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
 <div class="content">
     <h2>You need profile to use system. If you have one - login</h2>
-
-            <form method="post">
+    <!-- action="{{ url_for('signup') }} -->
+            <form method="post" ">
                 <fieldset>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <label for="name">Your Name</label>
                     <input name="username" type="text" placeholder="Your Name">
 
@@ -18,16 +17,13 @@
                     <label for="password">Your Password</label>
                     <input name="password" type="password" placeholder="Your Password">
 
-                    <input class="button-primary" type="submit" value="Create User">
+                    <input type="submit" value="Create User">
                 </fieldset>
             </form>
     
-   
-
         <div>
             <h5>Have troubles accessing the system? Contact us via support@email.com</h5>
         </div>
 
 </div>
-
 {% endblock %}
