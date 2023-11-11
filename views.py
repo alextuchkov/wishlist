@@ -368,7 +368,7 @@ def split():
         try:
             session.commit()
             flash(
-                "Успіх! Дочекайтесь іншого користувача, щоб він розділив цей подарунок",
+                "Успіх!",
                 "success",
             )
         except Exception as e:

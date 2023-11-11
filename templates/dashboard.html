@@ -129,34 +129,8 @@
                     </tbody>
                   </table>
                   <hr>
-                    <div class="row">
-                <div class="column">
-                  <h3>Ви забукали наступні подарунки:</h3>
-                </div>
-              </div>
-              
-                <table>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Назва</th>
-                      <th>Дії</th>
-                 
-                    </tr>
-                  </thead>
-                  <tbody>
-                      {% for field in booked_items %}
-                      <tr>
-                        <td>{{ field.id }}</td>
-                        <td>{{ field.item_name }}</td>
-          
-                        <td><a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  <hr>
-
+                    
+        
 
                   <div class="row">
                     <div class="column">
