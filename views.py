@@ -1,6 +1,8 @@
-from flask import render_template, request, flash, url_for, redirect
+from flask import render_template, request, flash, url_for, redirect, jsonify
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
+
 
 from models import User, List, ListItem, Comment, FollowedLists
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -282,7 +284,6 @@ def list(id):
             followed_lists=followed_lists,
         )
     except Exception as e:
-        # flash(f"Error: {str(e)}", "error")
         pass
 
     return render_template(
@@ -296,23 +297,89 @@ def list(id):
 @app.route("/book", methods=["POST"])
 @login_required
 def book():
-    item_id = request.form.get("item-id")
-    ref_id = request.form.get("ref-id")
-
-    list_item = session.query(ListItem).filter_by(id=item_id).first()
-
-    if list_item is not None:
-        list_item.is_booked = True
-        list_item.booked_by = current_user.id
-
     try:
-        session.commit()
-        flash("You booked item!", "success")
-    except Exception as e:
-        session.rollback()
-        flash(f"An error occurred while booking item: {str(e)}", "error")
+        data = request.get_json()
 
-    return redirect(url_for("list", id=ref_id))
+        item_id = data.get("item-id")
+        ref_id = data.get("ref-id")
+
+        list_item = session.query(ListItem).filter_by(id=item_id).first()
+
+        if list_item is not None:
+            if list_item.is_booked and list_item.booked_by == current_user.id:
+                # If the item is already booked by the current user, unbook it and clear sharer information
+                list_item.is_booked = False
+                list_item.booked_by = None
+                list_item.sharer_1 = None
+                list_item.sharer_2 = None
+                flash("You unbooked item!", "success")
+            else:
+                # Otherwise, book the item and clear sharer information
+                list_item.is_booked = True
+                list_item.booked_by = current_user.id
+                list_item.sharer_1 = None
+                list_item.sharer_2 = None
+                flash("You booked item!", "success")
+
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while processing the request: {str(e)}", "error")
+
+        return jsonify({"redirect_url": url_for("list", id=ref_id)})
+    except Exception as e:
+        print(f"Error processing request: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route("/split", methods=["POST"])
+@login_required
+def split():
+    try:
+        data = request.get_json()
+
+        item_id = data.get("item-id")
+        ref_id = data.get("ref-id")
+
+        list_item = session.query(ListItem).filter_by(id=item_id).first()
+
+        if list_item is not None:
+            # Check if the current user is already a sharer
+            if current_user.id in {list_item.sharer_1, list_item.sharer_2}:
+                # If yes, remove them
+                if list_item.sharer_1 == current_user.id:
+                    list_item.sharer_1 = None
+                elif list_item.sharer_2 == current_user.id:
+                    list_item.sharer_2 = None
+                flash("Ви відмінили розділення цього подарунка", "success")
+            else:
+                # If not, add them as a sharer
+                if list_item.sharer_1 is None:
+                    list_item.sharer_1 = current_user.id
+                elif list_item.sharer_2 is None:
+                    list_item.sharer_2 = current_user.id
+                else:
+                    flash(
+                        "Тільки 2 користувачі можуть розділити цей подарунок", "error"
+                    )
+            # list_item.is_shared = True
+
+        try:
+            session.commit()
+            flash(
+                "Успіх! Дочекайтесь іншого користувача, щоб він розділив цей подарунок",
+                "success",
+            )
+        except Exception as e:
+            session.rollback()
+            flash(f"An error occurred while splitting item: {str(e)}", "error")
+
+        return jsonify({"redirect_url": url_for("list", id=ref_id)})
+
+    except Exception as e:
+        print(f"Error processing request: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 400
 
 
 @app.route("/toggle_follow", methods=["POST"])
@@ -354,9 +421,28 @@ def dashboard():
         session.query(List).filter_by(id=followed_list.list).first()
         for followed_list in followed_list_references
     ]
+
+    booked_items = session.query(ListItem).filter_by(booked_by=current_user.id).all()
+
+    shared_items = (
+        session.query(ListItem)
+        .filter(
+            or_(
+                ListItem.sharer_1 == current_user.id,
+                ListItem.sharer_2 == current_user.id,
+            )
+        )
+        .all()
+    )
+
     title = "Профіль"
     return render_template(
-        "dashboard.html", lists=lists, followed_lists=followed_lists, title=title
+        "dashboard.html",
+        lists=lists,
+        followed_lists=followed_lists,
+        title=title,
+        booked_items=booked_items,
+        shared_items=shared_items,
     )
 
 
@@ -381,18 +467,18 @@ def edit_dashboard():
     return redirect(url_for("dashboard"))
 
 
-@app.route("/listitem/<int:id>/comments")
-def comments(id):
-    page_title = "Комментарі"
+@app.route("/listitem/<int:id>")
+def listitem(id):
     comments = session.query(Comment).filter_by(list_item=id).all()
     list_item = session.query(ListItem).filter_by(id=id).first()
+    page_title = list_item.item_name
 
     return render_template(
-        "comments.html", comments=comments, title=page_title, list_item=list_item
+        "listitem.html", comments=comments, title=page_title, list_item=list_item
     )
 
 
-@app.route("/comment<int:id>", methods=["POST"])
+@app.route("/comment/<int:id>", methods=["POST"])
 @login_required
 def comment(id):
     if request.method == "POST":

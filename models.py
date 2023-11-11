@@ -70,6 +70,9 @@ class ListItem(Base):
     list = Column(Integer, ForeignKey("lists.id"), nullable=False)
     is_booked = Column(Boolean, default=False)
     booked_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_shared = Column(Boolean, default=False)
+    sharer_1 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    sharer_2 = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     def __repr__(self):
         return (

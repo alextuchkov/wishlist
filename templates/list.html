@@ -31,30 +31,72 @@
       </div>
 
 
-    {% for item in list_items %}
-    <form action="{{ url_for('book') }}" method="post">
-        <div class="list-item{% if item.is_booked %}-booked{% endif %}">
-            <!-- {% if item.is_booked %}
-            <p>Хтось вже забронював цей товар за собою</p>
-            {% endif %} -->
-            <h3>{{item.item_name}}</h3>
-            <p>{{ item.item_description }}</p>
-            <p><b>Посилання:</b> {{item.url}}</p>
-            <p><b>Ціна:</b> {{item.price}} грн.</p>
-            <input type="hidden" name="item-id" value="{{ item.id }}">
-            <input type="hidden" name="ref-id" value="{{ list.id }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+{% for item in list_items %}
+<form id="form-{{ item.id }}" method="post">
+    <div class="list-item{% if item.is_booked %}-booked{% endif %}{% if item.sharer_1 or item.sharer_2 %}-shared{% endif %}">
+        
+        <h3>{{ item.item_name }}</h3>
+          
 
-            {% if current_user.is_authenticated %}
+
+        <p>{{ item.item_description }}</p>
+        <p><b>Посилання:</b> {{ item.url }}</p>
+        <p><b>Ціна:</b> {{ item.price }} грн.</p>
+        <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% if current_user.is_authenticated %}
+     
+
+            {% if item.is_booked %}
+            <p>This item is booked</p>
+            {% endif %}
+            {% if item.is_shared %}
+            <p>This item is shared</p>
+            {% endif %}
+    
+            
+            <!-- Case 1 - where i can book it on my own -->
             {% if not item.is_booked %}
-                <button type="submit" class="button">Куплю це сам</button>
-                <a class="button" href="#">Можу розділити</a>
+            <button type="button" class="button book-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Куплю це сам</button>
             {% endif %}
-            <a class="button" href="{{ url_for('comments', id=item.id) }}">Обговорення</a>
+            
+            {% if item.is_booked and item.booked_by == current_user.id %}
+                <button type="button" class="button book-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав, не куплю</button>
             {% endif %}
-        </div>
-    </form>
-    {% endfor %}
+    
+            <!-- Case 2 - splitting -->
+            {% if not item.sharer_1 and not item.is_booked %}
+            <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Можу розділити</button>
+            {% endif %}
+
+            {% if item.sharer_1 and item.sharer_1 != current_user.id and not item.sharer_2 and not item.is_booked %}
+                <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Доєднатись до спліта</button>
+            {% endif %}
+
+            <!-- Case 3 - unsplitting -->
+            {% if item.sharer_1 == current_user.id %}
+                <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав ділити</button>
+            {% endif %}
+
+            {% if item.sharer_2 == current_user.id %}
+            <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав ділити</button>
+            {% endif %}
+
+
+
+            <a class="button" href="{{ url_for('listitem', id=item.id) }}">Подивитись</a>
+        {% endif %}
+
+    </div>
+</form>
+{% endfor %}
+
+<script>
+    var csrfToken = document.getElementById('csrf_token').value;
+</script>
+
+
+
 
 
 
