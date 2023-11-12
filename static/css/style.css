@@ -728,10 +728,21 @@ ul.flashes li.error {
   background-color: rgb(217, 223, 217);
   color: #333;
   border-radius: 5px;
-  text-decoration: line-through;
 }
 
+.list-item-shared {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: rgb(198, 204, 20);
+  color: #333;
+  border-radius: 5px;
+}
 .center-image {
   display: block;
   margin: 0 auto;
+}
+
+.unbook-button {
+  color: red;
 }
