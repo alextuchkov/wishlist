@@ -42,29 +42,30 @@
     </div>
 
   </div>
-  <hr>
-  <div class="row">
-    <div class="column column-20">
-      <h4>Назва події</h4>
+
+  <!-- <div class="row">
+    <div class="column">
+      <p>Назва події</p>
     </div>
     <div class="column column-20">
-      <h4>Дата події</h4>
+      <p>Дата події</p>
     </div>
-    <div class="column column-offset-10">
-      <h4>Дії</h4>
+    <div class="column">
+      <p>Дії</p>
     </div>
-  </div>
+  </div> -->
   
   {% for field in lists %}
-  <div class="row">
-    <div class="column column-25">
-      <h5>{{ field.name }}</h5>
+  <div class="row list-item">
+    <div class="column ">
+      <p><b><a href="{{ url_for('list', id=field.id) }}">{{ field.name }}</a></b></p>
     </div>
-    <div class="column column-20">
+    <div class="column">
       <h5>{{ field.deadline }}</h5>
     </div>
-    <div class="column column-offset-10">
-      <a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>&nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Редагувати</a>&nbsp;<a class="button" href="{{ url_for('delete', id=field.id) }}">Видалити</a>
+    <div class="column">
+      <!-- <a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a> -->
+      &nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Редагувати</a>&nbsp;<a class="button button-outline" href="{{ url_for('delete', id=field.id) }}">Видалити</a>
     </div>
   </div>
   {% endfor %}
@@ -77,7 +78,7 @@
   </div>
 </div>
 
-<div class="row">
+<!-- <div class="row list-item">
   <div class="column column-25">
     <h4>Назва події</h4>
   </div>
@@ -87,20 +88,22 @@
   <div class="column column-offset-10">
     <h4>Дії</h4>
   </div>
-</div>
+</div> -->
 
 {% for field in followed_lists %}
-<div class="row">
-  <div class="column column-20">
-    <h5>{{ field.name }}</h5>
+<a href="{{ url_for('list', id=field.id) }}">
+<div class="row list-item">
+  <div class="column">
+    <p><b>{{ field.name }}</b></p>
   </div>
-  <div class="column column-20">
+  <div class="column">
     <h5>{{ field.deadline }}</h5>
   </div>
-  <div class="column column-offset-10">
+  <!-- <div class="column">
     <a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>
-  </div>
+  </div> -->
 </div>
+</a>
 {% endfor %}
 {% endif %}
 
@@ -113,7 +116,7 @@
   </div>
 </div>
 
-<div class="row">
+<!-- <div class="row">
   <div class="column column-25">
     <h4>Назва події</h4>
   </div>
@@ -121,19 +124,30 @@
   <div class="column column-offset-10">
     <h4>Дії</h4>
   </div>
-</div>
+</div> -->
 
 {% for field in booked_items %}
-<div class="row">
-  <div class="column column-25">
-    <h5>{{ field.item_name }}</h5>
+<div class="row list-item">
+  <div class="column">
+    <a href="{{ url_for('list', id=field.list_id) }}"><b>{{ field.list.name }}</b></a>
+  </div>
+  <div class="column">
+      <a href="{{ url_for('listitem', id=field.id) }}"><b>{{ field.item_name }}</b></a>
+  </div>
+  <div class="column">
+   <p>{{ field.list.deadline }}</p>
+  </div>
+  <div class="column">
+    <img src="{{ field.meta_image }}" height="100px" width="auto">
   </div>
 
-  <div class="column column-offset-10">
+  <!-- <div class="column column-offset-10">
     <a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
-  </div>
+  </div> -->
 </div>
 {% endfor %}
+
+
 {% endif %}
   
 
@@ -141,7 +155,7 @@
 {% if shared_items %}
 <h3>Ви ділити наступні подарунки:</h3>
 
-<div class="row">
+<!-- <div class="row list-item">
   <div class="column column-25">
     <h4>Назва події</h4>
   </div>
@@ -150,36 +164,47 @@
     <h4>Подарунок</h4>
   </div>
 
-  <div class="column column-25">
+  <div class="column column-40">
     <h4>З ким ви ділите</h4>
   </div>
 
-  <div class="column column-offset-10">
+  <div class="column">
     <h4>Дії</h4>
   </div>
-</div>
+</div> -->
 
 {% for field in shared_items %}
-<div class="row">
-  <div class="column column-25">
-    <h5>{{ field.list.name }}</h5>
+<div class="row list-item">
+  <div class="column">
+    <a href="{{ url_for('list', id=field.list_id) }}">
+      <b>{{ field.list.name }}</b>
+    </a>
+ 
   </div>
 
-  <div class="column column-20">
-    <h5>{{ field.item_name }}</h5>
-  </div>
-
-  <div class="column column-25">
-
-        <h4>{{ field.sharer_1.username }}</h4>    
-        <h4>{{ field.sharer_2.username }}</h4>
-
+  <div class="column">
+    <a href="{{ url_for('listitem', id=field.id) }}">
+      <b>{{ field.item_name }}</b>
+    </a>
 
   </div>
 
-  <div class="column column-offset-10">
+  <div class="column">
+
+    {% if field.sharer_1_user and field.sharer_1_user.id != current_user.id %}
+    <p>{{ field.sharer_1_user.username }} <br> {{ field.sharer_1_user.about_me }} <br> {{ field.sharer_1_user.email }}</p>
+    {% elif field.sharer_2_user and field.sharer_2_user.id != current_user.id %}
+        <p>{{ field.sharer_2_user.username }} <br> {{ field.sharer_2_user.about_me }} <br> {{ field.sharer_2_user.email }}</p>
+    {% endif %}
+  </div>
+
+  <div class="column">
+    <img src="{{ field.meta_image }}" height="100px" width="auto">
+  </div>
+
+  <!-- <div class="column">
     <a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
-  </div>
+  </div> -->
 </div>
 {% endfor %}
 {% endif %}

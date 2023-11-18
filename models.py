@@ -76,6 +76,12 @@ class ListItem(Base):
     booked_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     sharer_1 = Column(Integer, ForeignKey("users.id"), nullable=True)
     sharer_2 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    sharer_1_user = relationship(
+        "User", foreign_keys=[sharer_1], backref="shared_items_1"
+    )
+    sharer_2_user = relationship(
+        "User", foreign_keys=[sharer_2], backref="shared_items_2"
+    )
 
     def __repr__(self):
         return (
