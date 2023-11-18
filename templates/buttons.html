@@ -1,0 +1,34 @@
+
+                 
+            <!-- Case 1 - where i can book it on my own -->
+            {% if not item.is_booked %}
+            <button type="button" class="button book-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Куплю це сам</button>
+            {% endif %}
+            
+            <!-- case 1.1 when i want to change my mind -->
+            {% if item.is_booked and item.booked_by == current_user.id %}
+                <button type="button" class="button book-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав, не куплю</button>
+            {% endif %}
+    
+            <!-- Case 2 - splitting -->
+            {% if not item.sharer_1 and not item.is_booked %}
+            <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Хочу розділити</button>
+            {% endif %}
+
+            {% if item.sharer_1 and item.sharer_1 != current_user.id and not item.sharer_2 and not item.is_booked %}
+                <!-- <button disabled> Іншший користувач хоче це розділити</button> -->
+                <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Доєднатись до спліта</button>
+            {% endif %}
+
+            <!-- Case 3 - unsplitting -->
+            {% if item.sharer_1 == current_user.id %}
+                <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав ділити</button>
+            {% endif %}
+
+            {% if item.sharer_2 == current_user.id %}
+            <button type="button" class="button split-button" data-item-id="{{ item.id }}" data-ref-id="{{ list.id }}">Передумав ділити</button>
+            {% endif %}
+
+            <!-- <a class="button" href="{{ url_for('listitem', id=item.id) }}">Подивитись</a> -->
+
+ 

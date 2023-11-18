@@ -1,0 +1,27 @@
+<!-- <div class="list-item{% if item.is_booked %}-booked{% endif %}{% if item.sharer_1 or item.sharer_2 %}-shared{% endif %}"> -->
+<form id="form-{{ item.id }}" method="post">
+<div class="list-item">
+<div class="row">
+    <div class="column column-75">
+        <h2><a href="{{ url_for('listitem', id=item.id) }}">{{ item.item_name }}</a></h2>
+        {% include 'badges.html' %}
+        <p>{{ item.item_description }}</p>
+        <p >{{ item.meta_title }}</p>
+        <p><b>Посилання:</b> <a href="{{ item.url }}">{{ item.url }}</a> </p>
+        <p><b>Ціна:</b> {{ item.price }} грн.</p>
+        <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+    </div>
+    <div class="column column-25">
+        <a href="{{ item.url }}">
+        <img src="{{ item.meta_image}}" alt="img" width="250" height="auto">
+        </a>
+    </div>
+
+
+</div>
+{% if current_user.is_authenticated %}
+    {% include 'buttons.html' %}
+
+{% endif %}
+</div>
+</form> 

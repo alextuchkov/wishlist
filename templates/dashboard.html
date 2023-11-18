@@ -3,12 +3,7 @@
 <title>{% block title %}{{ title }}: {{ current_user.username }}{% endblock %}</title>
 
 {% block content %}
-
-
-
-    <div class="content">
-        <h2>Привіт, {{ current_user.username }} | #{{ current_user.id }}</h2>
-
+  <h2>Привіт, {{ current_user.username }} | #{{ current_user.id }}</h2>
         <form action="/edit_dashboard" method="post">
           <fieldset>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -23,8 +18,8 @@
               </div>
 
               <div>
-                  <label for="about-me">Інформація про тебе</label>
-                  <textarea name="about-me" id="about-me" cols="30" rows="10" >{% if not current_user.about_me %}Add about me text here{% else %}{{ current_user.about_me }}{% endif %} 
+                  <label for="about-me">Контактна інформація для звʼязки при спліті</label>
+                  <textarea name="about-me" id="about-me" cols="30" rows="10" >{% if not current_user.about_me %}Додайте телефон, мессенджер або пошту 👉{% else %}{{ current_user.about_me }}{% endif %} 
                   </textarea>
               </div>
       
@@ -32,134 +27,189 @@
           </fieldset>
       </form>
       
-    
     <p>* <i>Всі профілі публічні за замовчуванням</i></p>
       <hr>
 
+
+
+  <div class="row">
+    <div class="column">
+      <h3>Ваші події:</h3>
     </div>
-        <div class="row">
-          <div class="column">
-            <h3>Ваші події:</h3>
-          </div>
 
-          <div class="column">
-            <a class="button float-right" href="{{ url_for('new') }}">Створити нову подію</a>
-          </div>
+    <div class="column">
+      <a class="button float-right" href="{{ url_for('new') }}">Створити нову подію</a>
+    </div>
 
-        </div>
-            
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Назва</th>
-                    <th>Дата</th>
-                    <th>Дії</th>
-               
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for field in lists %}
-                    <tr>
-                      <td>{{ field.id }}</td>
-                      <td>{{ field.name }}</td>
-                      <td>{{ field.deadline }}</td>
-                      <td><a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>&nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Редагувати</a>&nbsp;<a class="button" href="{{ url_for('delete', id=field.id) }}">Видалити</a></td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-             
-          <hr>
+  </div>
+
+  <!-- <div class="row">
+    <div class="column">
+      <p>Назва події</p>
+    </div>
+    <div class="column column-20">
+      <p>Дата події</p>
+    </div>
+    <div class="column">
+      <p>Дії</p>
+    </div>
+  </div> -->
+  
+  {% for field in lists %}
+  <div class="row list-item">
+    <div class="column ">
+      <p><b><a href="{{ url_for('list', id=field.id) }}">{{ field.name }}</a></b></p>
+    </div>
+    <div class="column">
+      <h5>{{ field.deadline }}</h5>
+    </div>
+    <div class="column">
+      <!-- <a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a> -->
+      &nbsp;<a class="button" href="{{ url_for('edit', id=field.id) }}">Редагувати</a>&nbsp;<a class="button button-outline" href="{{ url_for('delete', id=field.id) }}">Видалити</a>
+    </div>
+  </div>
+  {% endfor %}
 
 
-          <div class="row">
-            <div class="column">
-              <h3>Ви слідкуєте за наступними подіями:</h3>
-            </div>
-            </div>
+{% if followed_lists %}
+<div class="row">
+  <div class="column">
+    <h3>Ви слідкуєте за наступними подіями:</h3>
+  </div>
+</div>
+
+<!-- <div class="row list-item">
+  <div class="column column-25">
+    <h4>Назва події</h4>
+  </div>
+  <div class="column column-20">
+    <h4>Дата події</h4>
+  </div>
+  <div class="column column-offset-10">
+    <h4>Дії</h4>
+  </div>
+</div> -->
+
+{% for field in followed_lists %}
+<a href="{{ url_for('list', id=field.id) }}">
+<div class="row list-item">
+  <div class="column">
+    <p><b>{{ field.name }}</b></p>
+  </div>
+  <div class="column">
+    <h5>{{ field.deadline }}</h5>
+  </div>
+  <!-- <div class="column">
+    <a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>
+  </div> -->
+</div>
+</a>
+{% endfor %}
+{% endif %}
+
+
           
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Назва</th>
-                  <th>Дата</th>
-                  <th>Дії</th>
-             
-                </tr>
-              </thead>
-              <tbody>
-                  {% for field in followed_lists %}
-                  <tr>
-                    <td>{{ field.id }}</td>
-                    <td>{{ field.name }}</td>
-                    <td>{{ field.deadline }}</td>
-                    <td><a class="button" href="{{ url_for('list', id=field.id) }}">Подивитись</a>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-              <hr>
+{% if booked_items %}
+<div class="row">
+  <div class="column">
+    <h3>Ви забукали наступні подарунки:</h3>
+  </div>
+</div>
 
-              <div class="row">
-                <div class="column">
-                  <h3>Ви забукали наступні подарунки:</h3>
-                </div>
-              </div>
-              
-                <table>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Назва</th>
-                      <th>Дії</th>
-                 
-                    </tr>
-                  </thead>
-                  <tbody>
-                      {% for field in booked_items %}
-                      <tr>
-                        <td>{{ field.id }}</td>
-                        <td>{{ field.item_name }}</td>
-          
-                        <td><a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  <hr>
-                    
-        
+<!-- <div class="row">
+  <div class="column column-25">
+    <h4>Назва події</h4>
+  </div>
 
-                  <div class="row">
-                    <div class="column">
-                      <h3>Ви ділити наступні подарунки:</h3>
-                    </div>
-                  </div>
-                  
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Назва</th>
-                          <th>Дії</th>
-                     
-                        </tr>
-                      </thead>
-                      <tbody>
-                          {% for field in shared_items %}
-                          <tr>
-                            <td>{{ field.id }}</td>
-                            <td>{{ field.item_name }}</td>
-              
-                            <td><a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                      <hr>
-     
+  <div class="column column-offset-10">
+    <h4>Дії</h4>
+  </div>
+</div> -->
 
+{% for field in booked_items %}
+<div class="row list-item">
+  <div class="column">
+    <a href="{{ url_for('list', id=field.list_id) }}"><b>{{ field.list.name }}</b></a>
+  </div>
+  <div class="column">
+      <a href="{{ url_for('listitem', id=field.id) }}"><b>{{ field.item_name }}</b></a>
+  </div>
+  <div class="column">
+   <p>{{ field.list.deadline }}</p>
+  </div>
+  <div class="column">
+    <img src="{{ field.meta_image }}" height="100px" width="auto">
+  </div>
+
+  <!-- <div class="column column-offset-10">
+    <a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
+  </div> -->
+</div>
+{% endfor %}
+
+
+{% endif %}
+  
+
+
+{% if shared_items %}
+<h3>Ви ділити наступні подарунки:</h3>
+
+<!-- <div class="row list-item">
+  <div class="column column-25">
+    <h4>Назва події</h4>
+  </div>
+
+  <div class="column column-20">
+    <h4>Подарунок</h4>
+  </div>
+
+  <div class="column column-40">
+    <h4>З ким ви ділите</h4>
+  </div>
+
+  <div class="column">
+    <h4>Дії</h4>
+  </div>
+</div> -->
+
+{% for field in shared_items %}
+<div class="row list-item">
+  <div class="column">
+    <a href="{{ url_for('list', id=field.list_id) }}">
+      <b>{{ field.list.name }}</b>
+    </a>
+ 
+  </div>
+
+  <div class="column">
+    <a href="{{ url_for('listitem', id=field.id) }}">
+      <b>{{ field.item_name }}</b>
+    </a>
+
+  </div>
+
+  <div class="column">
+
+    {% if field.sharer_1_user and field.sharer_1_user.id != current_user.id %}
+    <p>{{ field.sharer_1_user.username }} <br> {{ field.sharer_1_user.about_me }} <br> {{ field.sharer_1_user.email }}</p>
+    {% elif field.sharer_2_user and field.sharer_2_user.id != current_user.id %}
+        <p>{{ field.sharer_2_user.username }} <br> {{ field.sharer_2_user.about_me }} <br> {{ field.sharer_2_user.email }}</p>
+    {% endif %}
+  </div>
+
+  <div class="column">
+    <img src="{{ field.meta_image }}" height="100px" width="auto">
+  </div>
+
+  <!-- <div class="column">
+    <a class="button" href="{{ url_for('listitem', id=field.id) }}">Подивитись</a>
+  </div> -->
+</div>
+{% endfor %}
+{% endif %}
+
+
+    
              
 {% endblock %}

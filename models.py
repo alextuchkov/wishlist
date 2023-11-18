@@ -54,6 +54,7 @@ class List(Base):
     description = Column(String(256))
     deadline = Column(Date)
     owner = Column(Integer, ForeignKey("users.id"), nullable=False)
+    items = relationship("ListItem", back_populates="list")
 
     def __repr__(self):
         return f"<List id={self.id}, name={self.name}, description={self.description}, deadline={self.deadline}>"
@@ -67,12 +68,20 @@ class ListItem(Base):
     item_description = Column(String(256))
     url = Column(String(512))
     price = Column(Numeric(precision=10, scale=2))
-    list = Column(Integer, ForeignKey("lists.id"), nullable=False)
+    list_id = Column(Integer, ForeignKey("lists.id"), nullable=False)
+    list = relationship("List", back_populates="items")
+    meta_title = Column(String(256), nullable=True)
+    meta_image = Column(String(512), nullable=True)
     is_booked = Column(Boolean, default=False)
     booked_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    is_shared = Column(Boolean, default=False)
     sharer_1 = Column(Integer, ForeignKey("users.id"), nullable=True)
     sharer_2 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    sharer_1_user = relationship(
+        "User", foreign_keys=[sharer_1], backref="shared_items_1"
+    )
+    sharer_2_user = relationship(
+        "User", foreign_keys=[sharer_2], backref="shared_items_2"
+    )
 
     def __repr__(self):
         return (
