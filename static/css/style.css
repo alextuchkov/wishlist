@@ -725,7 +725,7 @@ ul.flashes li.error {
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;
-  background-color: rgb(217, 223, 217);
+  background-color: rgb(69, 128, 69);
   color: #333;
   border-radius: 5px;
 }
@@ -734,7 +734,7 @@ ul.flashes li.error {
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;
-  background-color: rgb(198, 204, 20);
+  background-color: rgb(207, 210, 125);
   color: #333;
   border-radius: 5px;
 }
@@ -745,4 +745,52 @@ ul.flashes li.error {
 
 .unbook-button {
   color: red;
+}
+
+/* Red Badge */
+.badge-red {
+  display: inline-block;
+  padding: 0.5em 0.5em;
+  font-size: 1em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #dc3545;
+  border-radius: 0.25em;
+  margin-bottom: 1em;
+
+}
+
+/* Yellow Badge */
+.badge-yellow {
+  display: inline-block;
+  padding: 0.5em 0.5em;
+  font-size: 1em;
+  font-weight: bold;
+  color: #212529;
+  background-color: #ffc107;
+  border-radius: 0.25em;
+  margin-bottom: 1em;
+
+}
+/* Green Badge */
+.badge-green {
+  display: inline-block;
+  padding: 0.5em 0.5em;
+  font-size: 1em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #28a745;
+  border-radius: 0.25em;
+  margin-bottom: 1em;
+}
+
+/* Grey Badge */
+.comments-badge {
+  display: inline-block;
+  padding: 0.25em 0.25em;
+  font-size: 2em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #6c757d;
+  border-radius: 0.25em;
 }

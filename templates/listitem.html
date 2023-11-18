@@ -5,16 +5,37 @@
 
 
 <div class="content">
-        <a class="button" href="{{ url_for('list', id=list_item.list) }}">Повернутись до списку</a>
-        <div class="list-item{% if list_item.is_booked %}-booked{% endif %}">
-            <h3>{{list_item.item_name}}</h3>
-            <p>{{ list_item.item_description }}</p>
-            <p><b>Посилання:</b> {{list_item.url}}</p>
-            <p><b>Ціна:</b> {{list_item.price}} грн.</p>
-            <input type="hidden" name="item-id" value="{{ list_item.id }}">
+        <a class="button" href="{{ url_for('list', id=item.list) }}">Повернутись до списку</a>
 
-        </div>
+        {% if current_user.is_authenticated %}
+        <form id="form-{{ item.id }}" method="post">
+            <!-- <div class="list-item{% if item.is_booked %}-booked{% endif %}{% if item.sharer_1 or item.sharer_2 %}-shared{% endif %}"> -->
+            <div class="list-item">
+                <div class="row">
+                    <div class="column column-75">
+                        <h3>{{ item.item_name }}</h3>
+                        {% include 'badges.html' %}
+                        <p>{{ item.item_description }}</p>
+                        <p>{{ item.meta_title }}</p>
+                        <p><b>Посилання:</b> {{ item.url }}</p>
+                        <p><b>Ціна:</b> {{ item.price }} грн.</p>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+                    </div>
+                    <div class="column column-25">
+                        <img src="{{ item.meta_image}}" alt="img" width="250" height="auto">
+                    </div>
 
+
+                </div>
+
+                {% include 'buttons.html' %}
+
+            </div>
+        </form>
+        {% endif %}
+
+
+    <hr>    
     <hr>
     {% for comment in comments %}
         <div class="list-item">
@@ -23,7 +44,7 @@
         </div>
     {% endfor %}
 
-    <form action="{{ url_for('comment', id=list_item.id) }}" method="post">
+    <form action="{{ url_for('comment', id=item.id) }}" method="post">
         <div class="list-item">
             <textarea required name="comment" placeholder="Почніть обговорення" cols="30" rows="10"></textarea>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

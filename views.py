@@ -16,6 +16,8 @@ from flask_login import (
 from datetime import datetime
 from app import app, session, login_manager
 from validations import is_valid_email, is_valid_password
+import requests
+from bs4 import BeautifulSoup
 
 
 @app.route("/")
@@ -27,6 +29,41 @@ def index():
 def user_loader(user_id):
     with app.app_context():
         return session.get(User, user_id)
+
+
+def get_metadata(url):
+    try:
+        # Fetch the webpage content
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Parse HTML content
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Extract metadata
+        title = soup.title.string if soup.title else None
+        # og_title = soup.find("meta", property="og:title")
+        # og_title = og_title["content"] if og_title else None
+
+        # description = soup.find("meta", property="og:description")
+        # description = description["content"] if description else None
+
+        og_image = soup.find("meta", property="og:image")
+        og_image = og_image["content"] if og_image else None
+
+        # h1_tag = soup.find("h1")
+        # h1_content = h1_tag.string if h1_tag else None
+
+        return {
+            "title": title,
+            # "og_title": og_title,
+            # "description": description,
+            "og_image": og_image,
+            # "h1_content": h1_content,
+        }
+
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Error fetching content: {e}"}
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -132,7 +169,7 @@ def new():
 def edit(id):
     page_title = "Edit list"
     list = session.query(List).filter_by(id=id).first()
-    list_items = session.query(ListItem).filter_by(list=list.id).all()
+    list_items = session.query(ListItem).filter_by(list_id=list.id).all()
 
     return render_template(
         "edit.html", list=list, list_items=list_items, title=page_title
@@ -177,12 +214,17 @@ def add_list_item():
         item_url = request.form.get("item-link")
         ref_id = request.form.get("ref-id")
 
+        mtd = get_metadata(item_url)
+        print(mtd)
+
         new_list_item = ListItem(
             item_name=item_name,
             item_description=item_description,
             price=item_price,
             url=item_url,
-            list=ref_id,
+            list_id=ref_id,
+            meta_title=mtd["title"],
+            meta_image=mtd["og_image"],
         )
         try:
             session.add(new_list_item)
@@ -264,7 +306,8 @@ def delete(id):
 def list(id):
     list = session.query(List).filter_by(id=id).first()
     page_title = f"{list.name}"
-    list_items = session.query(ListItem).filter_by(list=list.id).all()
+    list_items = session.query(ListItem).filter_by(list_id=list.id).all()
+
     try:
         followed_list_references = (
             session.query(FollowedLists).filter_by(follower=current_user.id).all()
@@ -472,9 +515,10 @@ def listitem(id):
     comments = session.query(Comment).filter_by(list_item=id).all()
     list_item = session.query(ListItem).filter_by(id=id).first()
     page_title = list_item.item_name
+    list = session.query(List).filter_by(id=id).first()
 
     return render_template(
-        "listitem.html", comments=comments, title=page_title, list_item=list_item
+        "listitem.html", comments=comments, title=page_title, item=list_item, list=list
     )
 
 
@@ -495,4 +539,4 @@ def comment(id):
             session.rollback()
             flash(f"An error occurred while adding list item: {str(e)}", "error")
 
-        return redirect(url_for("comments", id=id))
+        return redirect(url_for("listitem", id=id))

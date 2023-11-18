@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <textarea name="description">{{ list.description }}</textarea>
-                <input type="submit" value="Edit List">
+                <input type="submit" value="Редагувати">
             </div>
 
        </fieldset>
@@ -36,7 +36,7 @@
             <input type="text" name="item-price" value="{{item.price}}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="submit" value="Update">&nbsp;
-            <a class="button" href="{{ url_for('delete_list_item', id=item.id) }}">Delete</a>
+            <a class="button" href="{{ url_for('delete_list_item', id=item.id) }}">Видалити</a>
         </div>
     </form>
    {% endfor %}
@@ -53,7 +53,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     </div>
 
-    <input class="button-primary" type="submit" value="Add Item">
+    <input class="button-primary" type="submit" value="Додати">
 </form>
 
 
